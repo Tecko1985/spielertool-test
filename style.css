@@ -339,7 +339,7 @@ table tr:hover td { background: var(--gray); }
 .changelog-entry .cv { font-weight: 700; color: var(--blue); }
 .changelog-entry .cn { color: var(--text); }
 .changelog-group { display: flex; flex-direction: column; gap: 4px; }
-.changelog-group .cg-title { font-weight: 600; color: var(--text); }
+.changelog-group .cg-title { font-weight: 700; font-size: 14px; color: var(--blue); text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 2px; }
 .changelog-group .cg-items { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 3px; color: var(--text); }
 
 .feedback-item { display: flex; flex-direction: column; gap: 4px; padding: 10px; border: 1px solid var(--border); border-radius: 8px; }
