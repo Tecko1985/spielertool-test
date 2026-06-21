@@ -68,9 +68,8 @@ const SCORE_CATEGORIES = [
   {
     id: "t2",
     label: "Taktik",
-    max: 20,
+    max: 10,
     criteria: [
-      { key: "t2_spielintelligenz", label: "Spielintelligenz/Übersicht" },
       { key: "t2_positionierung", label: "Positionierung" }
     ]
   },
@@ -207,11 +206,6 @@ const CRITERIA_RUBRIC = {
     1: "Lässt die eigene Position häufig unbesetzt. Hält die Abstände zum Mitspieler nicht ein. Läuft unnötige Wege in leere Räume.",
     5: "Hält die Grundposition solide. Erfüllt die taktischen Anweisungen, ohne kreativ zu werden. Läuft nur die geforderten Wege.",
     10: "Erkennt, wann die Position verlassen werden muss. Besetzt stets die wichtigen Räume (offensiv wie defensiv). Korrigiert aktiv die Fehler von Mitspielern durch kluge Läufe."
-  },
-  t2_spielintelligenz: {
-    1: "Agiert nur reaktiv, sieht Mitspieler erst kurz vor dem Anspiel. Entscheidungen sind oft falsch und verzögert.",
-    5: "Trifft meist die richtige Entscheidung in der direkten Zone. Scant das Feld, aber nicht permanent. Findet die sichere Lösung.",
-    10: "Proaktiv und antizipativ. Liest das Spiel, weiß, was als Nächstes passiert. Trifft optimale Entscheidungen, die Gegner überraschen und Räume öffnen. Permanent hoher Informationsstand."
   },
   t2_positionierung: {
     1: "Lässt die eigene Position häufig unbesetzt. Hält die Abstände zum Mitspieler nicht ein. Läuft unnötige Wege in leere Räume.",
