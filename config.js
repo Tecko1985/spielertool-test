@@ -15,7 +15,7 @@ const APP_CHANGELOG = [
       {
         title: "Bewertung",
         items: [
-          "Bewertung je Spieler in den Bereichen Technik & Taktik, Taktik, Athletik, Mentale Stärke sowie Charakter & Sozial.",
+          "Bewertung je Spieler in den Bereichen Technik & Taktik, Athletik, Mentale Stärke sowie Charakter & Sozial.",
           "Rubrik-Texte je Kriterium und Punktstufe als Orientierung.",
           "Anzeige der letzten Bewertung direkt im Bewertungs-Tab.",
           "Altersgerechte, frei editierbare Gewichtung der Bewertungsbereiche je Altersstufe.",
@@ -66,14 +66,6 @@ const SCORE_CATEGORIES = [
     ]
   },
   {
-    id: "t2",
-    label: "Taktik",
-    max: 10,
-    criteria: [
-      { key: "t2_positionierung", label: "Positionierung" }
-    ]
-  },
-  {
     id: "t3",
     label: "Athletik",
     max: 50,
@@ -114,7 +106,7 @@ const SCORE_CATEGORIES = [
 
 const TOTAL_MAX_SCORE = SCORE_CATEGORIES.reduce((sum, c) => sum + c.max, 0);
 
-// Altersstufen-Gewichtung: wie stark Technik(t1)/Taktik(t2)/Athletik(t3)/Mentale Stärke(t4)/
+// Altersstufen-Gewichtung: wie stark Technik & Taktik(t1)/Athletik(t3)/Mentale Stärke(t4)/
 // Charakter & Sozial(t5) je Altersstufe in den gewichteten Gesamtwert einfließen (Summe je Stufe = 100).
 // Diese Werte sind Startwerte und können im Tab "Mannschaften" jederzeit angepasst werden.
 const AGE_GROUP_LABELS = {
@@ -124,9 +116,9 @@ const AGE_GROUP_LABELS = {
 };
 
 const DEFAULT_AGE_GROUP_WEIGHTS = {
-  f_e: { t1: 45, t2: 5, t3: 15, t4: 5, t5: 30 },
-  d_c: { t1: 35, t2: 25, t3: 20, t4: 8, t5: 12 },
-  a_b: { t1: 20, t2: 35, t3: 30, t4: 8, t5: 7 }
+  f_e: { t1: 50, t3: 15, t4: 5, t5: 30 },
+  d_c: { t1: 60, t3: 20, t4: 8, t5: 12 },
+  a_b: { t1: 55, t3: 30, t4: 8, t5: 7 }
 };
 
 // Förder-/Beobachtungsschwelle je Altersstufe: ab diesem gewichteten Gesamtwert (%) gilt ein
@@ -139,14 +131,13 @@ const DEFAULT_AGE_GROUP_THRESHOLDS = {
 };
 
 // Orientierungshilfe (kein fester Wert, nur Anhaltspunkt) je Altersstufe und Bereich:
-// typische Spanne + Trainings-Fokus laut Jugendfußball-Literatur. t2 (Taktik) ist hier in der
-// "Technik & Taktik"-Spanne (t1) bzw. "Taktik"-Spanne (t2) der jeweiligen Quelle zusammengefasst.
+// typische Spanne + Trainings-Fokus laut Jugendfußball-Literatur. Taktik ist hier mit in der
+// "Technik & Taktik"-Spanne (t1) zusammengefasst.
 const AGE_GROUP_FOCUS = {
   f_e: {
     title: "G- & F-Jugend (Bambini bis U9/U10): Das Lernalter",
     intro: "In dieser Phase stehen Spaß, vielseitige Bewegung und das Erleben von Erfolg absolut im Vordergrund.",
-    t1: { range: "Hoch (ca. 40–50%)", text: "Goldenes Lernalter! Ballgefühl, Dribbling, Koordination mit Ball (Finten, Passen, Schießen). Beidfüßigkeit ist entscheidend." },
-    t2: { range: "Niedrig (ca. 0–10%)", text: "Minimale Individualtaktik (z.B. den freien Raum erkennen, 1 gegen 1). Keine komplexen Systeme." },
+    t1: { range: "Hoch (ca. 40–60%)", text: "Goldenes Lernalter! Ballgefühl, Dribbling, Koordination mit Ball (Finten, Passen, Schießen). Beidfüßigkeit ist entscheidend. Taktisch nur minimale Individualtaktik (z.B. den freien Raum erkennen, 1 gegen 1), keine komplexen Systeme." },
     t3: { range: "Mittel (ca. 10–20%)", text: "Spielerisch integriert (Koordination, Geschicklichkeit, Schnelligkeit in Spielformen). Keine isolierte Kondition." },
     t4: { range: "Niedrig (ca. 0–10%)", text: "Selbstvertrauen stärken, positive Rückmeldung, Fehler als Lernchance." },
     t5: { range: "Hoch (ca. 30–40%)", text: "Wertevermittlung (Fairplay, Respekt, Teamgeist), Zuhören, soziale Regeln, Umgang mit Gewinnen/Verlieren." }
@@ -154,8 +145,7 @@ const AGE_GROUP_FOCUS = {
   d_c: {
     title: "D- & C-Jugend (U11 bis U15): Das Leistungsalter",
     intro: "Die Spieler sind lernwilliger und belastbarer. Technik bleibt zentral, aber Taktik und spezifische Athletik gewinnen an Bedeutung.",
-    t1: { range: "Mittel bis hoch (ca. 30–40%)", text: "Festigen unter Zeit-, Gegner- und Präzisionsdruck. Positionsspezifische Technik (Flanken, Kopfball)." },
-    t2: { range: "Mittel (ca. 20–30%)", text: "Individual- und Gruppentaktik (Freilaufverhalten, Verschieben, Überzahl/Unterzahl)." },
+    t1: { range: "Hoch (ca. 50–70%)", text: "Festigen unter Zeit-, Gegner- und Präzisionsdruck. Positionsspezifische Technik (Flanken, Kopfball). Dazu Individual- und Gruppentaktik (Freilaufverhalten, Verschieben, Überzahl/Unterzahl)." },
     t3: { range: "Mittel (ca. 15–25%)", text: "Koordinatives Schnelligkeitstraining. Erste spezifische Kraftübungen (Rumpfstabilität)." },
     t4: { range: "Mittel (ca. 5–10%)", text: "Einstellung (Wille, Konzentration), Umgang mit Druck und Rückschlägen." },
     t5: { range: "Mittel (ca. 10–15%)", text: "Eigenverantwortung fördern, Umgang mit der Pubertät, Konfliktlösung im Team." }
@@ -163,8 +153,7 @@ const AGE_GROUP_FOCUS = {
   a_b: {
     title: "A- & B-Jugend (U17 bis U19): Das Spezialisierungsalter",
     intro: "Vorbereitung auf den Seniorenbereich. Alle Bereiche werden professioneller.",
-    t1: { range: "Mittel (ca. 15–25%)", text: "Automatisierung unter höchstem Tempo und Druck. Perfektion der individuellen Stärken." },
-    t2: { range: "Hoch (ca. 30–40%)", text: "Mannschaftstaktik, Spielsysteme, Standardsituationen. Gegneranalyse." },
+    t1: { range: "Hoch (ca. 45–65%)", text: "Automatisierung unter höchstem Tempo und Druck. Perfektion der individuellen Stärken. Dazu Mannschaftstaktik, Spielsysteme, Standardsituationen, Gegneranalyse." },
     t3: { range: "Hoch (ca. 25–35%)", text: "Positionsgerechte Athletik. Maximalkraft, Schnelligkeitsausdauer, Verletzungsprophylaxe." },
     t4: { range: "Mittel (ca. 5–10%)", text: "Leistungspsychologie, Selbstregulation, mentale Wettkampfvorbereitung." },
     t5: { range: "Niedrig bis mittel (ca. 5–10%)", text: "Führungsrollen übernehmen, Umgang mit dem Umfeld (Beruf, Schule), Verantwortung für die Karriere." }
