@@ -547,13 +547,24 @@ function renderVersionInfo() {
   });
   const list = document.getElementById("changelog-list");
   if (!list) return;
-  list.innerHTML = APP_CHANGELOG.map(
-    (entry) => `
+  list.innerHTML = APP_CHANGELOG.map((entry) => {
+    const body = entry.groups
+      ? entry.groups
+          .map(
+            (g) => `
+        <div class="changelog-group">
+          <div class="cg-title">${escapeHtml(g.title)}</div>
+          <ul class="cg-items">${g.items.map((i) => `<li>${escapeHtml(i)}</li>`).join("")}</ul>
+        </div>`
+          )
+          .join("")
+      : `<span class="cn">${escapeHtml(entry.notes)}</span>`;
+    return `
     <div class="changelog-entry">
       <span class="cv">v${escapeHtml(entry.version)}</span>
-      <span class="cn">${escapeHtml(entry.notes)}</span>
-    </div>`
-  ).join("");
+      ${body}
+    </div>`;
+  }).join("");
 }
 
 // ---------- Änderungswünsche ----------

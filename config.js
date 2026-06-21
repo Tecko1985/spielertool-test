@@ -3,17 +3,49 @@ const APP_VERSION = "1.0.0";
 const APP_CHANGELOG = [
   {
     version: "1.0.0",
-    notes:
-      "Spielerverwaltung: Anlegen, inline Bearbeiten und Suchen von Spielern (Vor-/Nachname, Position, Geburtsdatum), automatische Mannschaftszuordnung anhand des Geburtsdatums. " +
-      "Mannschaftsverwaltung mit Altersstufen-Filter, der über alle Tabs hinweg wirkt. " +
-      "Bewertung je Spieler in den Bereichen Technik & Taktik, Taktik, Athletik, Mentale Stärke sowie Charakter & Sozial, mit Rubrik-Texten je Kriterium und Punktstufe; Anzeige der letzten Bewertung im Bewertungs-Tab. " +
-      "Altersgerechte, frei editierbare Gewichtung der Bewertungsbereiche je Altersstufe sowie frei einstellbare Förder-/Beobachtungsschwelle je Altersstufe. " +
-      "Dashboard mit Filter nach Alter der letzten Bewertung (3/6/9/12 Monate), Markierung von Spielern über der Förderschwelle und Sprung direkt zur Bewertung. " +
-      "Spielerprofil mit Verlaufs-Charts (Linie, Radar, Vergleich) über alle Bewertungszeitpunkte. " +
-      "Spieler-Import aus Excel-Dateien (Spalten Vorname/Nachname/Position/Geburtsdatum, mit oder ohne Kopfzeile). " +
-      "Speicherort frei wählbar: lokale Datei per Datei-Picker (mit dauerhaft gemerkter Zugriffsberechtigung) oder Verbindung per Nextcloud (WebDAV) als mobile Alternative, inklusive automatischem, datiertem Backup bei jedem App-Start. " +
-      "App ist installierbar (PWA) für app-ähnliche Nutzung ohne Browser-Adressleiste. " +
-      "Einstellungsbereich mit Autosave-/Autoload-Status, Versionsinfo und Änderungswünsche-Formular."
+    groups: [
+      {
+        title: "Spieler & Mannschaften",
+        items: [
+          "Spieler anlegen, inline bearbeiten und suchen (Vor-/Nachname, Position, Geburtsdatum).",
+          "Automatische Mannschaftszuordnung anhand des Geburtsdatums.",
+          "Mannschaftsverwaltung mit Altersstufen-Filter, der über alle Tabs hinweg wirkt."
+        ]
+      },
+      {
+        title: "Bewertung",
+        items: [
+          "Bewertung je Spieler in den Bereichen Technik & Taktik, Taktik, Athletik, Mentale Stärke sowie Charakter & Sozial.",
+          "Rubrik-Texte je Kriterium und Punktstufe als Orientierung.",
+          "Anzeige der letzten Bewertung direkt im Bewertungs-Tab.",
+          "Altersgerechte, frei editierbare Gewichtung der Bewertungsbereiche je Altersstufe.",
+          "Frei einstellbare Förder-/Beobachtungsschwelle je Altersstufe."
+        ]
+      },
+      {
+        title: "Dashboard & Profil",
+        items: [
+          "Dashboard-Filter nach Alter der letzten Bewertung (3/6/9/12 Monate).",
+          "Markierung von Spielern über der Förderschwelle, mit Sprung direkt zur Bewertung.",
+          "Spielerprofil mit Verlaufs-Charts (Linie, Radar, Vergleich) über alle Bewertungszeitpunkte."
+        ]
+      },
+      {
+        title: "Daten & Speicherung",
+        items: [
+          "Spieler-Import aus Excel-Dateien (Vorname/Nachname/Position/Geburtsdatum, mit oder ohne Kopfzeile).",
+          "Speicherort frei wählbar: lokale Datei per Datei-Picker (mit dauerhaft gemerkter Zugriffsberechtigung) oder Nextcloud (WebDAV) als mobile Alternative.",
+          "Automatisches, datiertes Backup bei jedem App-Start."
+        ]
+      },
+      {
+        title: "Sonstiges",
+        items: [
+          "App ist installierbar (PWA) für app-ähnliche Nutzung ohne Browser-Adressleiste.",
+          "Einstellungsbereich mit Autosave-/Autoload-Status, Versionsinfo und Änderungswünsche-Formular."
+        ]
+      }
+    ]
   }
 ];
 
