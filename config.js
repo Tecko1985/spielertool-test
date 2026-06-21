@@ -1,26 +1,20 @@
-const APP_VERSION = "1.14.1";
+const APP_VERSION = "1.0.0";
 
 const APP_CHANGELOG = [
-  { version: "1.14.1", notes: "Nextcloud-Verbindungsformular ist mit Adresse und Benutzername vorausgefüllt (Projektordner umgezogen nach Tools/Spieler_Bewertung)." },
-  { version: "1.14.0", notes: "Verbindung per Nextcloud (WebDAV) als Alternative zum lokalen Datei-Picker – funktioniert auch im mobilen Browser (Tab \"Einstellungen\" bzw. Verbindungs-Bildschirm)." },
-  { version: "1.13.1", notes: "Excel-Import benötigt keine Spaltenüberschrift mehr – Spaltenreihenfolge Vorname/Nachname/Position/Geburtsdatum reicht aus." },
-  { version: "1.13.0", notes: "Spieler-Import aus Excel-Dateien (Vorname/Nachname/Position/Geburtsdatum) im Tab \"Einstellungen\"." },
-  { version: "1.12.2", notes: "Tab \"Speicherort & Sicherung\" in \"Einstellungen\" umbenannt." },
-  { version: "1.12.1", notes: "Dashboard-Filter: Checkbox zeigt nur Spieler über der Förder-/Beobachtungsschwelle." },
-  { version: "1.12.0", notes: "Automatisches, datiertes Backup in einen frei wählbaren Ordner bei jedem App-Start (Tab \"Speicherort & Sicherung\")." },
-  { version: "1.11.0", notes: "App ist installierbar (PWA). Nach Installation merkt sich Chrome die Dateizugriffsberechtigung dauerhaft – keine Abfrage mehr bei jedem Start." },
-  { version: "1.10.1", notes: "Verbindung zur Datendatei: Zugriff lässt sich mit einem Klick erneut bestätigen, ohne die Datei jedes Mal neu auswählen zu müssen." },
-  { version: "1.10.0", notes: "Frei einstellbare Förder-/Beobachtungsschwelle je Altersstufe; Dashboard markiert Spieler darüber." },
-  { version: "1.9.0", notes: "Spielername in Vor- und Nachname getrennt; Suchfeld im Tab \"Spieler verwalten\"." },
-  { version: "1.8.0", notes: "Altersgerechte Gewichtung der Bereiche (Technik/Taktik/Athletik/Mental/Charakter) je Altersstufe, frei editierbar." },
-  { version: "1.7.0", notes: "Versionsinfo und Änderungswünsche-Formular hinzugefügt." },
-  { version: "1.6.0", notes: "Einstellungsbereich für Speicherort mit Autosave-/Autoload-Status." },
-  { version: "1.5.0", notes: "Spielerliste direkt inline editierbar (ohne Bearbeiten-Dialog)." },
-  { version: "1.4.0", notes: "Automatische Mannschaftszuordnung anhand des Geburtsdatums (Tag/Monat/Jahr)." },
-  { version: "1.3.0", notes: "Anzeige der letzten Bewertung im Bewertungs-Tab; Dashboard-Sprung zur Bewertung." },
-  { version: "1.2.0", notes: "Dashboard-Filter nach Alter der letzten Bewertung (3/6/9/12 Monate)." },
-  { version: "1.1.0", notes: "Mannschaftsverwaltung mit globalem Filter über alle Tabs." },
-  { version: "1.0.0", notes: "Erste Version: Spielerverwaltung, Bewertung, Dashboard, Profil mit Verlaufs-Charts." }
+  {
+    version: "1.0.0",
+    notes:
+      "Spielerverwaltung: Anlegen, inline Bearbeiten und Suchen von Spielern (Vor-/Nachname, Position, Geburtsdatum), automatische Mannschaftszuordnung anhand des Geburtsdatums. " +
+      "Mannschaftsverwaltung mit Altersstufen-Filter, der über alle Tabs hinweg wirkt. " +
+      "Bewertung je Spieler in den Bereichen Technik & Taktik, Taktik, Athletik, Mentale Stärke sowie Charakter & Sozial, mit Rubrik-Texten je Kriterium und Punktstufe; Anzeige der letzten Bewertung im Bewertungs-Tab. " +
+      "Altersgerechte, frei editierbare Gewichtung der Bewertungsbereiche je Altersstufe sowie frei einstellbare Förder-/Beobachtungsschwelle je Altersstufe. " +
+      "Dashboard mit Filter nach Alter der letzten Bewertung (3/6/9/12 Monate), Markierung von Spielern über der Förderschwelle und Sprung direkt zur Bewertung. " +
+      "Spielerprofil mit Verlaufs-Charts (Linie, Radar, Vergleich) über alle Bewertungszeitpunkte. " +
+      "Spieler-Import aus Excel-Dateien (Spalten Vorname/Nachname/Position/Geburtsdatum, mit oder ohne Kopfzeile). " +
+      "Speicherort frei wählbar: lokale Datei per Datei-Picker (mit dauerhaft gemerkter Zugriffsberechtigung) oder Verbindung per Nextcloud (WebDAV) als mobile Alternative, inklusive automatischem, datiertem Backup bei jedem App-Start. " +
+      "App ist installierbar (PWA) für app-ähnliche Nutzung ohne Browser-Adressleiste. " +
+      "Einstellungsbereich mit Autosave-/Autoload-Status, Versionsinfo und Änderungswünsche-Formular."
+  }
 ];
 
 // Bewertungs-Konfiguration: Kategorien, Kriterien und Rubrik-Texte (1 / 5 / 10)
