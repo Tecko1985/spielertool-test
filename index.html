@@ -46,9 +46,38 @@
       </div>
     </div>
     <p class="muted" id="fs-api-warning" style="display:none; margin-top:16px;">
-      Dein Browser unterstützt die File-System-API nicht (bitte Chrome oder Edge verwenden).
-      Die App funktioniert dann nur eingeschränkt – nutze stattdessen Export/Import nach dem Start.
+      Dein Browser unterstützt die File-System-API nicht (z.B. auf dem Handy). Nutze stattdessen
+      die Nextcloud-Verbindung unten – die funktioniert auch mobil und lädt die Datei automatisch.
     </p>
+  </div>
+
+  <div class="card" id="webdav-connect-section" style="margin-top:16px;">
+    <h2>Oder: Mit Nextcloud verbinden (auch am Handy)</h2>
+    <p class="muted" style="margin-bottom:14px;">
+      Lädt/speichert die Datei direkt über die Nextcloud-WebDAV-Adresse – ohne lokalen Datei-Picker.
+      Benötigt ein <strong>App-Passwort</strong> (Nextcloud → Einstellungen → Sicherheit → Neues App-Passwort erzeugen),
+      nicht dein normales Passwort. Der Nextcloud-Server muss CORS-Zugriffe von dieser Seite erlauben.
+    </p>
+    <form id="webdav-connect-form">
+      <div class="form-grid">
+        <div class="form-field" style="flex:2; min-width:260px;">
+          <label>WebDAV-Adresse der Datei *</label>
+          <input type="url" id="webdav-url" placeholder="https://cloud.example.com/remote.php/dav/files/USER/.../spielerdaten.json" required />
+        </div>
+        <div class="form-field">
+          <label>Benutzername *</label>
+          <input type="text" id="webdav-username" required />
+        </div>
+        <div class="form-field">
+          <label>App-Passwort *</label>
+          <input type="password" id="webdav-password" required />
+        </div>
+      </div>
+      <p class="muted" id="webdav-error" style="display:none; color:#c0392b; margin-bottom:10px;"></p>
+      <div class="btn-row" style="justify-content:flex-start;">
+        <button type="submit" class="btn" id="btn-webdav-connect">Mit Nextcloud verbinden</button>
+      </div>
+    </form>
   </div>
 </div>
 
@@ -175,9 +204,12 @@
         <p class="muted" style="margin-bottom:10px;" id="settings-save-status">
           Autospeichern aktiv · Autoladen beim nächsten Öffnen aktiv
         </p>
-        <div class="btn-row" style="justify-content:flex-start;">
+        <div class="btn-row" style="justify-content:flex-start;" id="settings-fs-actions">
           <button class="btn secondary small" id="btn-change-location-existing">Andere Datei öffnen…</button>
           <button class="btn secondary small" id="btn-change-location-new">Aktuelle Daten an neuem Ort speichern…</button>
+        </div>
+        <div class="btn-row" style="justify-content:flex-start; display:none;" id="settings-webdav-actions">
+          <button class="btn secondary small" id="btn-webdav-disconnect">Nextcloud-Verbindung trennen</button>
         </div>
       </div>
       <div class="card">
@@ -413,8 +445,8 @@
   </main>
 </div>
 
-<script src="config.js?v=1.13.1"></script>
-<script src="db.js?v=1.13.1"></script>
-<script src="app.js?v=1.13.1"></script>
+<script src="config.js?v=1.14.0"></script>
+<script src="db.js?v=1.14.0"></script>
+<script src="app.js?v=1.14.0"></script>
 </body>
 </html>

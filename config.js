@@ -1,6 +1,7 @@
-const APP_VERSION = "1.13.1";
+const APP_VERSION = "1.14.0";
 
 const APP_CHANGELOG = [
+  { version: "1.14.0", notes: "Verbindung per Nextcloud (WebDAV) als Alternative zum lokalen Datei-Picker – funktioniert auch im mobilen Browser (Tab \"Einstellungen\" bzw. Verbindungs-Bildschirm)." },
   { version: "1.13.1", notes: "Excel-Import benötigt keine Spaltenüberschrift mehr – Spaltenreihenfolge Vorname/Nachname/Position/Geburtsdatum reicht aus." },
   { version: "1.13.0", notes: "Spieler-Import aus Excel-Dateien (Vorname/Nachname/Position/Geburtsdatum) im Tab \"Einstellungen\"." },
   { version: "1.12.2", notes: "Tab \"Speicherort & Sicherung\" in \"Einstellungen\" umbenannt." },

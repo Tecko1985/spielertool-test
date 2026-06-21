@@ -5,6 +5,8 @@ const FileStore = (() => {
   const STORE = "handles";
   const KEY_DATA = "dataFileHandle";
   const KEY_BACKUP_DIR = "backupDirHandle";
+  const KEY_STORAGE_MODE = "storageMode";
+  const KEY_WEBDAV_CONFIG = "webdavConfig";
 
   function openDb() {
     return new Promise((resolve, reject) => {
@@ -53,7 +55,12 @@ const FileStore = (() => {
     clearHandle: () => clearValue(KEY_DATA),
     getBackupDirHandle: () => getValue(KEY_BACKUP_DIR),
     setBackupDirHandle: (handle) => setValue(KEY_BACKUP_DIR, handle),
-    clearBackupDirHandle: () => clearValue(KEY_BACKUP_DIR)
+    clearBackupDirHandle: () => clearValue(KEY_BACKUP_DIR),
+    getStorageMode: () => getValue(KEY_STORAGE_MODE),
+    setStorageMode: (mode) => setValue(KEY_STORAGE_MODE, mode),
+    getWebdavConfig: () => getValue(KEY_WEBDAV_CONFIG),
+    setWebdavConfig: (config) => setValue(KEY_WEBDAV_CONFIG, config),
+    clearWebdavConfig: () => clearValue(KEY_WEBDAV_CONFIG)
   };
 })();
 
@@ -80,4 +87,32 @@ async function writeDataFile(fileHandle, dataObj) {
 
 function fsApiSupported() {
   return typeof window.showOpenFilePicker === "function" && typeof window.showSaveFilePicker === "function";
+}
+
+function davAuthHeader(config) {
+  return "Basic " + btoa(unescape(encodeURIComponent(config.username + ":" + config.password)));
+}
+
+async function davReadFile(config) {
+  const resp = await fetch(config.url, {
+    method: "GET",
+    headers: { Authorization: davAuthHeader(config) }
+  });
+  if (resp.status === 404) return null;
+  if (!resp.ok) throw new Error(`WebDAV-Lesefehler (HTTP ${resp.status})`);
+  const text = await resp.text();
+  if (!text.trim()) return null;
+  return JSON.parse(text);
+}
+
+async function davWriteFile(config, dataObj) {
+  const resp = await fetch(config.url, {
+    method: "PUT",
+    headers: {
+      Authorization: davAuthHeader(config),
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(dataObj, null, 2)
+  });
+  if (!resp.ok) throw new Error(`WebDAV-Schreibfehler (HTTP ${resp.status})`);
 }
