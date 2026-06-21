@@ -4,6 +4,10 @@ let pendingHandle = null;
 let backupDirHandle = null;
 let storageMode = "fs"; // "fs" | "webdav"
 let webdavConfig = null;
+const DEFAULT_WEBDAV_CONFIG = {
+  url: "https://spielerrating.michel-brunner.workers.dev/remote.php/dav/files/Admin/05_Nachwuchsbereich/02_Förderung/Tools/Spieler_Bewertung/spielerdaten.json",
+  username: "Admin"
+};
 let autoBackupDoneThisSession = false;
 let saveTimer = null;
 let profileCharts = { line: null, radar: null, compare: null };
@@ -230,6 +234,7 @@ async function init() {
   document.getElementById("btn-reconnect-other").addEventListener("click", connectExisting);
   document.getElementById("webdav-connect-form").addEventListener("submit", handleWebdavConnectSubmit);
   document.getElementById("btn-webdav-disconnect").addEventListener("click", disconnectWebdav);
+  prefillWebdavForm(DEFAULT_WEBDAV_CONFIG);
 
   if (!fsApiSupported()) {
     document.getElementById("fs-api-warning").style.display = "block";
