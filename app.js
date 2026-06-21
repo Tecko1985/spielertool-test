@@ -458,7 +458,7 @@ function startApp() {
   document.getElementById("app-shell").style.display = "block";
   const status = document.getElementById("file-status");
   status.classList.add("connected");
-  const fileLabel = storageMode === "webdav" ? `Nextcloud (${webdavConfig.username})` : fileHandle ? fileHandle.name : "Datei";
+  const fileLabel = storageMode === "webdav" ? "Nextcloud" : fileHandle ? fileHandle.name : "Datei";
   status.querySelector(".label").textContent = "Verbunden: " + fileLabel;
   const settingsFileName = document.getElementById("settings-file-name");
   if (settingsFileName) settingsFileName.textContent = fileLabel;
