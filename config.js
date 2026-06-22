@@ -196,11 +196,6 @@ const CRITERIA_RUBRIC = {
     5: "Hält die Grundposition solide. Erfüllt die taktischen Anweisungen, ohne kreativ zu werden. Läuft nur die geforderten Wege.",
     10: "Erkennt, wann die Position verlassen werden muss. Besetzt stets die wichtigen Räume (offensiv wie defensiv). Korrigiert aktiv die Fehler von Mitspielern durch kluge Läufe."
   },
-  t2_positionierung: {
-    1: "Lässt die eigene Position häufig unbesetzt. Hält die Abstände zum Mitspieler nicht ein. Läuft unnötige Wege in leere Räume.",
-    5: "Hält die Grundposition solide. Erfüllt die taktischen Anweisungen, ohne kreativ zu werden. Läuft nur die geforderten Wege.",
-    10: "Erkennt, wann die Position verlassen werden muss. Besetzt stets die wichtigen Räume (offensiv wie defensiv). Korrigiert aktiv die Fehler von Mitspielern durch kluge Läufe."
-  },
   t3_zweikampfverhalten: {
     1: "Geht Duellen aus dem Weg oder verliert diese aufgrund schlechten Timings. Körperlichkeit ist kaum vorhanden.",
     5: "Gewinnt die Mehrheit der Boden-Zweikämpfe durch körperlichen Einsatz. Timing ist oft noch zu spät, aber akzeptabel.",
