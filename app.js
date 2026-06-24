@@ -43,6 +43,8 @@ function stalenessClass(days) {
 
 function migrateData(data) {
   if (!Array.isArray(data.teams)) data.teams = [];
+  if (!Array.isArray(data.players)) data.players = [];
+  if (!Array.isArray(data.evaluations)) data.evaluations = [];
   if (!Array.isArray(data.changeRequests)) data.changeRequests = [];
   if (!data.ageGroupWeights || typeof data.ageGroupWeights !== "object") {
     data.ageGroupWeights = JSON.parse(JSON.stringify(DEFAULT_AGE_GROUP_WEIGHTS));
@@ -736,6 +738,12 @@ function setupTeamForm() {
   });
 }
 
+function teamAgeSortKey(team) {
+  // Fällt auf birthdateTo zurück, wenn kein birthdateFrom gesetzt ist (z.B. "alle bis Jahrgang X"),
+  // statt die Mannschaft unabhängig vom tatsächlichen Alter ans Ende der Sortierung zu schieben.
+  return team.birthdateFrom || team.birthdateTo || "9999-99-99";
+}
+
 function compareTeamsByOrder(teamA, teamB, countA, countB) {
   switch (teamsSortOrder) {
     case "name-desc":
@@ -745,13 +753,13 @@ function compareTeamsByOrder(teamA, teamB, countA, countB) {
     case "count-asc":
       return countA - countB || teamA.name.localeCompare(teamB.name);
     case "age-desc": {
-      const av = teamA.birthdateFrom || "9999-99-99";
-      const bv = teamB.birthdateFrom || "9999-99-99";
+      const av = teamAgeSortKey(teamA);
+      const bv = teamAgeSortKey(teamB);
       return av < bv ? -1 : av > bv ? 1 : teamA.name.localeCompare(teamB.name);
     }
     case "age-asc": {
-      const av = teamA.birthdateFrom || "9999-99-99";
-      const bv = teamB.birthdateFrom || "9999-99-99";
+      const av = teamAgeSortKey(teamA);
+      const bv = teamAgeSortKey(teamB);
       return av > bv ? -1 : av < bv ? 1 : teamA.name.localeCompare(teamB.name);
     }
     default:
@@ -1292,8 +1300,8 @@ function getBestForCriterion(critKey, comparePlayerId) {
     if (!p) return null;
     const last = latestEvaluationFor(p.id);
     if (!last) return null;
+    if (last.scores[critKey] === undefined || isNaN(Number(last.scores[critKey]))) return null;
     const val = Number(last.scores[critKey]);
-    if (!val) return null;
     return { player: p, value: val, isComparison: true };
   }
   let pool = appData.players;
@@ -1317,8 +1325,8 @@ function getBestForCriterion(critKey, comparePlayerId) {
   pool.forEach((p) => {
     const last = latestEvaluationFor(p.id);
     if (!last) return;
+    if (last.scores[critKey] === undefined || isNaN(Number(last.scores[critKey]))) return;
     const val = Number(last.scores[critKey]);
-    if (!val) return;
     if (!best || val > best.value) {
       best = { player: p, value: val };
       return;
@@ -1893,19 +1901,38 @@ function normalizeHeaderKey(key) {
 const KNOWN_HEADER_KEYS = ["vorname", "nachname", "name", "position", "geburtsdatum", "geburtstag", "birthdate", "firstname", "lastname"];
 
 function looksLikeHeaderRow(row) {
-  return row.some((cell) => KNOWN_HEADER_KEYS.includes(normalizeHeaderKey(cell)));
+  const hasHeaderWord = row.some((cell) => KNOWN_HEADER_KEYS.includes(normalizeHeaderKey(cell)));
+  if (!hasHeaderWord) return false;
+  // Zusätzlich prüfen, ob die Geburtsdatum-Spalte kein echtes Datum enthält – sonst würde eine
+  // Datenzeile, deren Positions-Feld zufällig z.B. "Position" lautet, fälschlich als Kopfzeile
+  // erkannt und komplett übersprungen.
+  return !parseExcelDateToIso(row[3]);
 }
 
 function parseExcelDateToIso(value) {
   if (value === undefined || value === null || value === "") return "";
   if (value instanceof Date && !isNaN(value.getTime())) {
-    return value.toISOString().slice(0, 10);
+    // Lokale Datumsbestandteile verwenden, nicht toISOString() (UTC): xlsx liefert mit
+    // cellDates:true ein Date in lokaler Zeit; toISOString() würde es in Zeitzonen mit
+    // positivem UTC-Offset (z.B. Deutschland) um einen Tag nach hinten verschieben.
+    const y = value.getFullYear();
+    const mo = String(value.getMonth() + 1).padStart(2, "0");
+    const d = String(value.getDate()).padStart(2, "0");
+    return `${y}-${mo}-${d}`;
   }
   const str = String(value).trim();
   let m = str.match(/^(\d{1,2})\.(\d{1,2})\.(\d{2,4})$/);
   if (m) {
     let [, d, mo, y] = m;
-    if (y.length === 2) y = "20" + y;
+    if (y.length === 2) {
+      // Pivot-Jahr statt immer "20xx": zweistellige Jahre, die mehr als 10 Jahre in der
+      // Zukunft lägen, gehören ins vorherige Jahrhundert (z.B. "65" -> 1965, nicht 2065).
+      const currentYear = new Date().getFullYear();
+      const century = Math.floor(currentYear / 100) * 100;
+      let full = century + Number(y);
+      if (full > currentYear + 10) full -= 100;
+      y = String(full);
+    }
     return `${y.padStart(4, "0")}-${mo.padStart(2, "0")}-${d.padStart(2, "0")}`;
   }
   m = str.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/);
