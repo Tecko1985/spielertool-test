@@ -1286,8 +1286,12 @@ function renderDashboard() {
     btn.addEventListener("click", (e) => {
       const id = e.target.closest("tr").dataset.id;
       switchTab("evaluate");
-      document.getElementById("eval-player-select").value = id;
-      updateLastEvaluationInfo();
+      const sel = document.getElementById("eval-player-select");
+      sel.value = id;
+      // Programmatisches Setzen von .value löst kein change-Event aus – manuell anstoßen,
+      // damit die Bewertungsfelder mit den letzten Werten des gewählten Spielers vorbelegt
+      // (und Gesamtscore/Letzte-Bewertung-Info aktualisiert) werden.
+      sel.dispatchEvent(new Event("change"));
     });
   });
 }
@@ -1500,6 +1504,7 @@ function setupEvaluateForm() {
     appData.evaluations.push(evaluation);
     persist();
     alert("Bewertung gespeichert.");
+    document.getElementById("eval-notes").value = "";
     renderEvaluateForm();
     renderDashboard();
     renderProfile();
