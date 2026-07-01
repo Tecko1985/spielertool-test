@@ -2,12 +2,7 @@ let appData = { teams: [], players: [], evaluations: [], changeRequests: [] };
 let fileHandle = null;
 let pendingHandle = null;
 let backupDirHandle = null;
-let storageMode = "fs"; // "fs" | "webdav"
-let webdavConfig = null;
-const DEFAULT_WEBDAV_CONFIG = {
-  url: "https://spielerrating.michel-brunner.workers.dev/remote.php/dav/files/Admin/05_Nachwuchsbereich/02_Förderung/Tools/Spieler_Bewertung/spielerdaten.json",
-  username: "Admin"
-};
+let storageMode = "fs"; // "fs" | "gateway"
 let autoBackupDoneThisSession = false;
 let saveTimer = null;
 let profileCharts = { line: null, radar: null, compare: null };
@@ -234,34 +229,35 @@ async function init() {
   document.getElementById("btn-change-location-new").addEventListener("click", saveCurrentDataToNewLocation);
   document.getElementById("btn-reconnect").addEventListener("click", reconnectStoredHandle);
   document.getElementById("btn-reconnect-other").addEventListener("click", connectExisting);
-  document.getElementById("webdav-connect-form").addEventListener("submit", handleWebdavConnectSubmit);
-  document.getElementById("btn-webdav-disconnect").addEventListener("click", disconnectWebdav);
-  prefillWebdavForm(DEFAULT_WEBDAV_CONFIG);
 
   if (!fsApiSupported()) {
     document.getElementById("fs-api-warning").style.display = "block";
   }
 
   const mode = await FileStore.getStorageMode();
-  if (mode === "webdav") {
-    const config = await FileStore.getWebdavConfig();
-    if (config) {
-      try {
-        const data = await davReadFile(config);
-        storageMode = "webdav";
-        webdavConfig = config;
-        appData = data && Array.isArray(data.players) ? data : { teams: [], players: [], evaluations: [], changeRequests: [] };
-        migrateData(appData);
-        autoAssignAllPlayers();
-        startApp();
-        return;
-      } catch (e) {
-        console.error("WebDAV-Verbindung fehlgeschlagen", e);
-        prefillWebdavForm(config);
-        showWebdavError("Verbindung zu Nextcloud fehlgeschlagen: " + e.message + ". Bitte Zugangsdaten prüfen und erneut verbinden.");
+
+  // Cloud-Sync über die zentrale Anmeldung (Tools-Übersicht), außer der Nutzer
+  // hat bewusst den lokalen Datei-Modus gewählt. Das Login-Token liegt in
+  // derselben Origin (tecko1985.github.io) und wird einfach wiederverwendet.
+  if (mode !== "fs" && getSessionToken()) {
+    try {
+      const data = await gatewayLoad();
+      storageMode = "gateway";
+      appData = data && Array.isArray(data.players) ? data : { teams: [], players: [], evaluations: [], changeRequests: [] };
+      migrateData(appData);
+      autoAssignAllPlayers();
+      await FileStore.setStorageMode("gateway");
+      await FileStore.clearWebdavConfig(); // alte, im Klartext gespeicherte Zugangsdaten aufräumen
+      startApp();
+      return;
+    } catch (e) {
+      if (!(e instanceof NotLoggedInError)) {
+        console.error("Nextcloud-Zugriff über Login fehlgeschlagen", e);
+        showGatewayError("Zugriff auf Nextcloud fehlgeschlagen: " + e.message);
         showConnectScreen(false);
         return;
       }
+      // kein gültiges Login → unten lokaler Modus bzw. Anmelde-Hinweis
     }
   }
 
@@ -281,69 +277,11 @@ async function init() {
   showConnectScreen(false);
 }
 
-async function handleWebdavConnectSubmit(e) {
-  e.preventDefault();
-  const url = document.getElementById("webdav-url").value.trim();
-  const username = document.getElementById("webdav-username").value.trim();
-  const password = document.getElementById("webdav-password").value;
-  if (!url || !username || !password) return;
-  await connectWebdav({ url, username, password });
-}
-
-async function connectWebdav(config) {
-  showWebdavError("");
-  setWebdavConnecting(true);
-  try {
-    let data = await davReadFile(config);
-    if (data === null) {
-      const empty = { teams: [], players: [], evaluations: [], changeRequests: [] };
-      await davWriteFile(config, empty);
-      data = empty;
-    }
-    appData = Array.isArray(data.players) ? data : { teams: [], players: [], evaluations: [], changeRequests: [] };
-    migrateData(appData);
-    autoAssignAllPlayers();
-    storageMode = "webdav";
-    webdavConfig = config;
-    await FileStore.setStorageMode("webdav");
-    await FileStore.setWebdavConfig(config);
-    startApp();
-  } catch (e) {
-    console.error(e);
-    showWebdavError(
-      "Verbindung fehlgeschlagen: " + e.message + ". Prüfe URL, Benutzername, App-Passwort und ob der Nextcloud-Server CORS-Zugriffe von dieser Seite erlaubt."
-    );
-  } finally {
-    setWebdavConnecting(false);
-  }
-}
-
-function setWebdavConnecting(isConnecting) {
-  const btn = document.getElementById("btn-webdav-connect");
-  if (!btn) return;
-  btn.disabled = isConnecting;
-  btn.textContent = isConnecting ? "Verbinde…" : "Mit Nextcloud verbinden";
-}
-
-function showWebdavError(text) {
-  const el = document.getElementById("webdav-error");
+function showGatewayError(text) {
+  const el = document.getElementById("cloud-error");
   if (!el) return;
   el.textContent = text;
   el.style.display = text ? "block" : "none";
-}
-
-function prefillWebdavForm(config) {
-  const urlInput = document.getElementById("webdav-url");
-  const userInput = document.getElementById("webdav-username");
-  if (urlInput) urlInput.value = config.url;
-  if (userInput) userInput.value = config.username;
-}
-
-async function disconnectWebdav() {
-  if (!confirm("Nextcloud-Verbindung trennen? Danach musst du erneut Zugangsdaten eingeben oder eine lokale Datei wählen.")) return;
-  await FileStore.setStorageMode("fs");
-  await FileStore.clearWebdavConfig();
-  location.reload();
 }
 
 async function verifyPermissionSilent(handle) {
@@ -460,15 +398,15 @@ function startApp() {
   document.getElementById("app-shell").style.display = "block";
   const status = document.getElementById("file-status");
   status.classList.add("connected");
-  const fileLabel = storageMode === "webdav" ? "Nextcloud" : fileHandle ? fileHandle.name : "Datei";
+  const fileLabel = storageMode === "gateway" ? "Nextcloud (über Anmeldung)" : fileHandle ? fileHandle.name : "Datei";
   status.querySelector(".label").textContent = "Verbunden: " + fileLabel;
   const settingsFileName = document.getElementById("settings-file-name");
   if (settingsFileName) settingsFileName.textContent = fileLabel;
   setSaveStatus("Autospeichern aktiv · Autoladen beim nächsten Öffnen aktiv");
   const fsActions = document.getElementById("settings-fs-actions");
   const webdavActions = document.getElementById("settings-webdav-actions");
-  if (fsActions) fsActions.style.display = storageMode === "webdav" ? "none" : "flex";
-  if (webdavActions) webdavActions.style.display = storageMode === "webdav" ? "flex" : "none";
+  if (fsActions) fsActions.style.display = storageMode === "fs" ? "flex" : "none";
+  if (webdavActions) webdavActions.style.display = "none";
   renderAll();
   updateBackupFolderStatus();
   tryAutoBackupOnStart();
@@ -484,9 +422,8 @@ function persist() {
   clearTimeout(saveTimer);
   saveTimer = setTimeout(async () => {
     try {
-      if (storageMode === "webdav") {
-        if (!webdavConfig) return;
-        await davWriteFile(webdavConfig, appData);
+      if (storageMode === "gateway") {
+        await gatewaySave(appData);
       } else {
         if (!fileHandle) return;
         await writeDataFile(fileHandle, appData);
@@ -494,8 +431,12 @@ function persist() {
       const time = new Date().toLocaleTimeString("de-DE");
       setSaveStatus(`Zuletzt automatisch gespeichert um ${time} · Autoladen beim nächsten Öffnen aktiv`);
     } catch (e) {
-      console.error("Speichern fehlgeschlagen", e);
-      setSaveStatus("Speichern fehlgeschlagen — siehe Konsole.");
+      if (e instanceof NotLoggedInError) {
+        setSaveStatus("Sitzung abgelaufen — bitte in der Tools-Übersicht neu anmelden.");
+      } else {
+        console.error("Speichern fehlgeschlagen", e);
+        setSaveStatus("Speichern fehlgeschlagen — siehe Konsole.");
+      }
     }
   }, 300);
 }

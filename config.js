@@ -1,6 +1,19 @@
-const APP_VERSION = "1.0";
+const APP_VERSION = "1.1";
 
 const APP_CHANGELOG = [
+  {
+    version: "1.1",
+    groups: [
+      {
+        title: "Anmeldung statt Zugangsdaten",
+        items: [
+          "Die Nextcloud-Synchronisierung läuft jetzt über die zentrale Anmeldung in der Tools-Übersicht: einmal dort anmelden, danach werden die Spielerdaten automatisch geladen und gespeichert – auch am Handy.",
+          "Das frühere Verbindungsformular mit WebDAV-Adresse, Benutzername und App-Passwort entfällt komplett; es muss kein Passwort mehr auf dem Gerät eingegeben oder gespeichert werden.",
+          "Nur wer das Tool in der Übersicht sehen darf, kann die Spielerdaten öffnen (die Gruppen-Rechte werden serverseitig geprüft)."
+        ]
+      }
+    ]
+  },
   {
     version: "1.0",
     groups: [

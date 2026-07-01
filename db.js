@@ -116,3 +116,46 @@ async function davWriteFile(config, dataObj) {
   });
   if (!resp.ok) throw new Error(`WebDAV-Schreibfehler (HTTP ${resp.status})`);
 }
+
+// ---------- Zentrales Login-Gateway (Tools-Übersicht) ----------
+// Statt WebDAV-Zugangsdaten pro Gerät: das Login-Token der Tools-Übersicht
+// (gleiche Origin tecko1985.github.io) wird wiederverwendet. Der landingpage-
+// Worker prüft das Token + die Tool-Sichtbarkeit und greift serverseitig mit
+// den Vereins-Zugangsdaten auf Nextcloud zu — hier liegt kein Passwort mehr.
+const GATEWAY_URL = "https://landingpage.michel-brunner.workers.dev";
+const TOKEN_STORAGE_KEY = "tu_session_token";
+const GATEWAY_APP_ID = "spielertool-test";
+
+class NotLoggedInError extends Error {
+  constructor(message) {
+    super(message || "Nicht angemeldet");
+    this.name = "NotLoggedInError";
+  }
+}
+
+function getSessionToken() {
+  try { return localStorage.getItem(TOKEN_STORAGE_KEY); } catch (_) { return null; }
+}
+
+async function gatewayRequest(payload) {
+  const token = getSessionToken();
+  if (!token) throw new NotLoggedInError();
+  const resp = await fetch(GATEWAY_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Authorization: "Bearer " + token },
+    body: JSON.stringify(payload)
+  });
+  if (resp.status === 401) throw new NotLoggedInError("Sitzung abgelaufen");
+  if (resp.status === 403) throw new Error("Kein Zugriff auf dieses Tool.");
+  if (!resp.ok) throw new Error(`Gateway-Fehler (HTTP ${resp.status})`);
+  return resp.json();
+}
+
+async function gatewayLoad() {
+  const body = await gatewayRequest({ action: "dav-load", app: GATEWAY_APP_ID });
+  return body.data; // Objekt oder null (Datei noch nicht vorhanden)
+}
+
+async function gatewaySave(dataObj) {
+  await gatewayRequest({ action: "dav-save", app: GATEWAY_APP_ID, data: dataObj });
+}

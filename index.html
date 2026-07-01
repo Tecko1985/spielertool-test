@@ -10,7 +10,7 @@
 <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jspdf-autotable@3.8.2/dist/jspdf.plugin.autotable.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-<link rel="stylesheet" href="style.css?v=1.0.1" />
+<link rel="stylesheet" href="style.css?v=1.1" />
 </head>
 <body>
 
@@ -47,37 +47,21 @@
     </div>
     <p class="muted" id="fs-api-warning" style="display:none; margin-top:16px;">
       Dein Browser unterstützt die File-System-API nicht (z.B. auf dem Handy). Nutze stattdessen
-      die Nextcloud-Verbindung unten – die funktioniert auch mobil und lädt die Datei automatisch.
+      die automatische Nextcloud-Synchronisierung unten – dafür einmalig in der Tools-Übersicht anmelden.
     </p>
   </div>
 
-  <div class="card" id="webdav-connect-section" style="margin-top:16px;">
-    <h2>Oder: Mit Nextcloud verbinden (auch am Handy)</h2>
+  <div class="card" id="cloud-login-section" style="margin-top:16px;">
+    <h2>Automatische Nextcloud-Synchronisierung (auch am Handy)</h2>
     <p class="muted" style="margin-bottom:14px;">
-      Lädt/speichert die Datei direkt über die Nextcloud-WebDAV-Adresse – ohne lokalen Datei-Picker.
-      Benötigt ein <strong>App-Passwort</strong> (Nextcloud → Einstellungen → Sicherheit → Neues App-Passwort erzeugen),
-      nicht dein normales Passwort. Der Nextcloud-Server muss CORS-Zugriffe von dieser Seite erlauben.
+      Melde dich einmalig in der <strong>Tools-Übersicht</strong> an – danach werden die Spielerdaten
+      automatisch aus der Vereins-Nextcloud geladen und gespeichert, ganz ohne Zugangsdaten oder
+      App-Passwort auf diesem Gerät. Funktioniert auch mobil.
     </p>
-    <form id="webdav-connect-form">
-      <div class="form-grid">
-        <div class="form-field" style="flex:2; min-width:260px;">
-          <label>WebDAV-Adresse der Datei *</label>
-          <input type="url" id="webdav-url" placeholder="https://cloud.example.com/remote.php/dav/files/USER/.../spielerdaten.json" required />
-        </div>
-        <div class="form-field">
-          <label>Benutzername *</label>
-          <input type="text" id="webdav-username" required />
-        </div>
-        <div class="form-field">
-          <label>App-Passwort *</label>
-          <input type="password" id="webdav-password" required />
-        </div>
-      </div>
-      <p class="muted" id="webdav-error" style="display:none; color:#c0392b; margin-bottom:10px;"></p>
-      <div class="btn-row" style="justify-content:flex-start;">
-        <button type="submit" class="btn" id="btn-webdav-connect">Mit Nextcloud verbinden</button>
-      </div>
-    </form>
+    <div class="btn-row" style="justify-content:flex-start;">
+      <a class="btn" href="https://tecko1985.github.io/ToolsUebersicht/">Zur Tools-Übersicht &amp; anmelden</a>
+    </div>
+    <p class="muted" id="cloud-error" style="display:none; color:#c0392b; margin-top:12px;"></p>
   </div>
 </div>
 
@@ -445,8 +429,8 @@
   </main>
 </div>
 
-<script src="config.js?v=1.0.3"></script>
-<script src="db.js?v=1.0.2"></script>
-<script src="app.js?v=1.0.3"></script>
+<script src="config.js?v=1.1"></script>
+<script src="db.js?v=1.1"></script>
+<script src="app.js?v=1.1"></script>
 </body>
 </html>
