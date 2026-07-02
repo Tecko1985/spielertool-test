@@ -1,6 +1,19 @@
-const APP_VERSION = "1.0";
+const APP_VERSION = "1.1";
 
 const APP_CHANGELOG = [
+  {
+    version: "1.1",
+    groups: [
+      {
+        title: "Stabilität & Datensicherheit",
+        items: [
+          "Konfliktschutz beim Speichern: Bearbeiten zwei Geräte gleichzeitig, wird der Konflikt erkannt und der aktuelle Stand neu geladen, statt dass Änderungen stillschweigend verloren gehen (zusammen mit dem Update der Tools-Übersicht-Anmeldung).",
+          "Datumsangaben (Bewertungsdatum, Änderungswünsche, Backup-Dateinamen) verwenden jetzt die lokale Zeit — kurz nach Mitternacht wurde bisher noch das Datum des Vortags eingetragen.",
+          "PDF-Export prüft, ob das Tabellen-Plugin geladen ist, und meldet das Problem, statt kommentarlos zu scheitern."
+        ]
+      }
+    ]
+  },
   {
     version: "1.0",
     groups: [

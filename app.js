@@ -211,7 +211,10 @@ function uuid() {
 }
 
 function todayStr() {
-  return new Date().toISOString().slice(0, 10);
+  // Lokales Datum statt UTC (toISOString) – sonst bekommt z.B. eine Bewertung
+  // kurz nach Mitternacht in Deutschland noch das Datum des Vortags.
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 }
 
 // ---------- Persistenz ----------
@@ -431,7 +434,9 @@ function persist() {
       const time = new Date().toLocaleTimeString("de-DE");
       setSaveStatus(`Zuletzt automatisch gespeichert um ${time} · Autoladen beim nächsten Öffnen aktiv`);
     } catch (e) {
-      if (e instanceof NotLoggedInError) {
+      if (e instanceof ConflictError) {
+        await reloadAfterConflict();
+      } else if (e instanceof NotLoggedInError) {
         setSaveStatus("Sitzung abgelaufen — bitte in der Tools-Übersicht neu anmelden.");
       } else {
         console.error("Speichern fehlgeschlagen", e);
@@ -439,6 +444,23 @@ function persist() {
       }
     }
   }, 300);
+}
+
+// Konflikt beim Speichern (nur Gateway-Modus): ein anderes Gerät hat zwischen-
+// zeitlich gespeichert. Remote-Stand übernehmen und neu rendern — die letzte
+// eigene Eingabe geht dabei sichtbar verloren (Hinweis unten), statt dass die
+// Änderung des anderen Geräts stillschweigend überschrieben wird.
+async function reloadAfterConflict() {
+  try {
+    const data = await gatewayLoad();
+    appData = data && Array.isArray(data.players) ? data : { teams: [], players: [], evaluations: [], changeRequests: [] };
+    migrateData(appData);
+    renderAll();
+    setSaveStatus("⚠️ Anderes Gerät hat gleichzeitig gespeichert — Stand neu geladen, letzte Eingabe bitte prüfen.");
+  } catch (e) {
+    console.error("Neu laden nach Konflikt fehlgeschlagen", e);
+    setSaveStatus("Speicher-Konflikt — bitte Seite neu laden.");
+  }
 }
 
 // ---------- Navigation ----------
@@ -1724,6 +1746,10 @@ function exportProfilePdf() {
   }
   if (!window.jspdf) {
     alert("PDF-Bibliothek konnte nicht geladen werden (keine Internetverbindung?).");
+    return;
+  }
+  if (typeof new window.jspdf.jsPDF().autoTable !== "function") {
+    alert("PDF-Tabellen-Plugin (autoTable) konnte nicht geladen werden — bitte Seite neu laden.");
     return;
   }
   const compareEvals = evals.slice(-3);
