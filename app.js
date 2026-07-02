@@ -566,9 +566,9 @@ function renderFeedback() {
     .sort((a, b) => b.date.localeCompare(a.date))
     .map(
       (r) => `
-    <div class="feedback-item status-${r.status}" data-id="${r.id}">
+    <div class="feedback-item status-${escapeHtml(r.status)}" data-id="${escapeHtml(r.id)}">
       <div class="fh">
-        <span class="fmeta">${r.date}${r.author ? " · " + escapeHtml(r.author) : ""} · ${r.status === "erledigt" ? "Erledigt" : "Offen"}</span>
+        <span class="fmeta">${escapeHtml(r.date)}${r.author ? " · " + escapeHtml(r.author) : ""} · ${r.status === "erledigt" ? "Erledigt" : "Offen"}</span>
         <div class="row-actions">
           <button class="btn small secondary" data-action="toggle">${r.status === "erledigt" ? "Wieder öffnen" : "Als erledigt markieren"}</button>
           <button class="btn small danger" data-action="delete">Löschen</button>
@@ -602,7 +602,7 @@ function renderFeedback() {
 function populateTeamFilterSelect() {
   const current = currentTeamFilter;
   const options = sortedTeamsList()
-    .map((t) => `<option value="${t.id}">${escapeHtml(t.name)}</option>`)
+    .map((t) => `<option value="${escapeHtml(t.id)}">${escapeHtml(t.name)}</option>`)
     .join("");
   const html = `<option value="">Alle Mannschaften</option>` + options;
   const validCurrent = current && appData.teams.some((t) => t.id === current) ? current : "";
@@ -762,10 +762,10 @@ function renderTeams() {
   list.innerHTML = sortedTeamsWithCounts()
     .map(
       ({ team: t, count }) => `
-    <div class="team-edit-row" data-id="${t.id}">
+    <div class="team-edit-row" data-id="${escapeHtml(t.id)}">
       <input type="text" class="t-edit-name" value="${escapeHtml(t.name)}" placeholder="Name" />
-      <input type="date" class="t-edit-from" value="${t.birthdateFrom || ""}" />
-      <input type="date" class="t-edit-to" value="${t.birthdateTo || ""}" />
+      <input type="date" class="t-edit-from" value="${escapeHtml(t.birthdateFrom || "")}" />
+      <input type="date" class="t-edit-to" value="${escapeHtml(t.birthdateTo || "")}" />
       <span class="team-count">${count} Spieler</span>
       <button class="btn small danger" data-action="delete">Löschen</button>
     </div>`
@@ -859,7 +859,7 @@ function renderAgeWeights() {
       const sum = SCORE_CATEGORIES.reduce((s, cat) => s + (Number(weights[cat.id]) || 0), 0);
       const sumClass = sum === 100 ? "ok" : "bad";
       const inputs = SCORE_CATEGORIES.map(
-        (cat) => `<input type="number" min="0" max="100" step="1" class="weight-input" data-cat="${cat.id}" value="${weights[cat.id]}" />`
+        (cat) => `<input type="number" min="0" max="100" step="1" class="weight-input" data-cat="${cat.id}" value="${escapeHtml(weights[cat.id])}" />`
       ).join("");
       return `
       <div class="weights-row" data-group="${group}">
@@ -900,7 +900,7 @@ function renderAgeThresholds() {
       return `
       <div class="threshold-row" data-group="${group}">
         <span>${escapeHtml(AGE_GROUP_LABELS[group])}</span>
-        <input type="number" min="0" max="100" step="1" class="threshold-input" value="${value}" />
+        <input type="number" min="0" max="100" step="1" class="threshold-input" value="${escapeHtml(value)}" />
       </div>`;
     })
     .join("");
@@ -973,13 +973,13 @@ function filteredPlayers() {
 function populatePlayerSelects() {
   const options = filteredPlayers()
     .sort((a, b) => playerFullName(a).localeCompare(playerFullName(b)))
-    .map((p) => `<option value="${p.id}">${escapeHtml(playerFullName(p))}${p.teamId ? " (" + escapeHtml(teamName(p.teamId)) + ")" : ""}</option>`)
+    .map((p) => `<option value="${escapeHtml(p.id)}">${escapeHtml(playerFullName(p))}${p.teamId ? " (" + escapeHtml(teamName(p.teamId)) + ")" : ""}</option>`)
     .join("");
   ["eval-player-select", "profile-player-select"].forEach((id) => {
     const sel = document.getElementById(id);
     const current = sel.value;
     sel.innerHTML = `<option value="">— Spieler wählen —</option>` + options;
-    if (current && sel.querySelector(`option[value="${current}"]`)) sel.value = current;
+    if (current && [...sel.options].some((o) => o.value === current)) sel.value = current;
   });
   populateComparePlayerSelect();
   populateMultiCompareSelects();
@@ -988,14 +988,14 @@ function populatePlayerSelects() {
 function populateMultiCompareSelects() {
   const options = filteredPlayers()
     .sort((a, b) => playerFullName(a).localeCompare(playerFullName(b)))
-    .map((p) => `<option value="${p.id}">${escapeHtml(playerFullName(p))}${p.teamId ? " (" + escapeHtml(teamName(p.teamId)) + ")" : ""}</option>`)
+    .map((p) => `<option value="${escapeHtml(p.id)}">${escapeHtml(playerFullName(p))}${p.teamId ? " (" + escapeHtml(teamName(p.teamId)) + ")" : ""}</option>`)
     .join("");
   ["compare-player-1", "compare-player-2", "compare-player-3", "compare-player-4"].forEach((id) => {
     const sel = document.getElementById(id);
     if (!sel) return;
     const current = sel.value;
     sel.innerHTML = `<option value="">— keiner —</option>` + options;
-    if (current && sel.querySelector(`option[value="${current}"]`)) sel.value = current;
+    if (current && [...sel.options].some((o) => o.value === current)) sel.value = current;
     else sel.value = "";
   });
 }
@@ -1006,7 +1006,7 @@ function populateComparePlayerSelect() {
   const current = sel.value;
   const options = filteredPlayers()
     .sort((a, b) => playerFullName(a).localeCompare(playerFullName(b)))
-    .map((p) => `<option value="${p.id}">${escapeHtml(playerFullName(p))}${p.teamId ? " (" + escapeHtml(teamName(p.teamId)) + ")" : ""}</option>`)
+    .map((p) => `<option value="${escapeHtml(p.id)}">${escapeHtml(playerFullName(p))}${p.teamId ? " (" + escapeHtml(teamName(p.teamId)) + ")" : ""}</option>`)
     .join("");
   sel.innerHTML = `<option value="">— kein Vergleich, Bestwert anzeigen —</option>` + options;
   if (current && sel.querySelector(`option[value="${current}"]`)) sel.value = current;
@@ -1046,7 +1046,7 @@ function teamOptionsHtml(selectedId) {
   const options = appData.teams
     .slice()
     .sort((a, b) => a.name.localeCompare(b.name))
-    .map((t) => `<option value="${t.id}" ${t.id === selectedId ? "selected" : ""}>${escapeHtml(t.name)}</option>`)
+    .map((t) => `<option value="${escapeHtml(t.id)}" ${t.id === selectedId ? "selected" : ""}>${escapeHtml(t.name)}</option>`)
     .join("");
   return `<option value="" ${!selectedId ? "selected" : ""}>— ohne Mannschaft —</option>` + options;
 }
@@ -1102,11 +1102,11 @@ function renderPlayers() {
   list.innerHTML = players
     .map(
       (p) => `
-    <div class="player-edit-row" data-id="${p.id}">
+    <div class="player-edit-row" data-id="${escapeHtml(p.id)}">
       <input type="text" class="p-edit-firstname" value="${escapeHtml(p.firstName || "")}" placeholder="Vorname" />
       <input type="text" class="p-edit-lastname" value="${escapeHtml(p.lastName || "")}" placeholder="Nachname" />
       <input type="text" class="p-edit-position" value="${escapeHtml(p.position || "")}" placeholder="Position" />
-      <input type="date" class="p-edit-birthdate" value="${p.birthdate || ""}" />
+      <input type="date" class="p-edit-birthdate" value="${escapeHtml(p.birthdate || "")}" />
       <select class="p-edit-team">${teamOptionsHtml(p.teamId)}</select>
       <button class="btn small danger" data-action="delete">Löschen</button>
     </div>`
@@ -1216,11 +1216,11 @@ function renderDashboard() {
   tbody.innerHTML = rows
     .map(
       ({ p, last, total, pct, weighted, ageGroup, days }) => `
-    <tr data-id="${p.id}">
+    <tr data-id="${escapeHtml(p.id)}">
       <td>${escapeHtml(playerFullName(p))}</td>
       <td>${escapeHtml(p.position || "—")}</td>
       <td>${escapeHtml(teamName(p.teamId) || "—")}</td>
-      <td class="${stalenessClass(days)}">${last ? `${last.date} <span class="muted">(vor ${days} Tagen)</span>` : "noch nie bewertet"}</td>
+      <td class="${stalenessClass(days)}">${last ? `${escapeHtml(last.date)} <span class="muted">(vor ${days} Tagen)</span>` : "noch nie bewertet"}</td>
       <td>
         <div class="score-cell">
           <div class="score-bar-bg"><div class="score-bar-fill" style="width:${pct}%"></div></div>
@@ -1334,10 +1334,10 @@ function renderCategoryFields(container, scores, onChange) {
       div.innerHTML = `
         <div class="criterion-head">
           <label>${crit.label}</label>
-          <input type="number" class="val-input" min="1" max="10" step="1" value="${val}" />
+          <input type="number" class="val-input" min="1" max="10" step="1" value="${escapeHtml(val)}" />
         </div>
-        <input type="range" class="range-input" min="1" max="10" step="1" value="${val}" data-key="${crit.key}" />
-        ${best ? `<div class="criterion-best muted">${bestIcon} ${bestLabel}: ${escapeHtml(playerFullName(best.player))} (${best.value})</div>` : ""}
+        <input type="range" class="range-input" min="1" max="10" step="1" value="${escapeHtml(val)}" data-key="${crit.key}" />
+        ${best ? `<div class="criterion-best muted">${bestIcon} ${bestLabel}: ${escapeHtml(playerFullName(best.player))} (${escapeHtml(best.value)})</div>` : ""}
         <details>
           <summary>Bewertungshilfe anzeigen</summary>
           <div class="rubric-grid">
@@ -1521,8 +1521,8 @@ function renderProfileHistoryTable(evals, ageGroup) {
       const pct = Math.round((total / TOTAL_MAX_SCORE) * 100);
       const weighted = Math.round(weightedPercent(ev.scores, ageGroup));
       return `
-      <tr data-id="${ev.id}">
-        <td>${ev.date}</td>
+      <tr data-id="${escapeHtml(ev.id)}">
+        <td>${escapeHtml(ev.date)}</td>
         <td>${escapeHtml(ev.evaluator || "—")}</td>
         <td>
           <div class="score-cell">
@@ -1537,7 +1537,7 @@ function renderProfileHistoryTable(evals, ageGroup) {
           <button class="btn small danger" data-action="del-eval">Löschen</button>
         </td>
       </tr>
-      <tr class="eval-detail-row" data-detail-id="${ev.id}" style="display:none;">
+      <tr class="eval-detail-row" data-detail-id="${escapeHtml(ev.id)}" style="display:none;">
         <td colspan="6">${renderEvalDetailHtml(ev)}</td>
       </tr>`;
     })
@@ -1570,7 +1570,7 @@ function renderEvalDetailHtml(ev) {
   return SCORE_CATEGORIES.map((cat) => {
     const subtotal = categorySubtotal(ev.scores, cat);
     const rows = cat.criteria
-      .map((crit) => `<div class="eval-detail-item"><span>${escapeHtml(crit.label)}</span><span class="eval-detail-val">${ev.scores[crit.key] ?? "—"}</span></div>`)
+      .map((crit) => `<div class="eval-detail-item"><span>${escapeHtml(crit.label)}</span><span class="eval-detail-val">${escapeHtml(ev.scores[crit.key] ?? "—")}</span></div>`)
       .join("");
     return `
       <div class="eval-detail-cat">
@@ -1701,7 +1701,7 @@ function renderPlayerComparison() {
           <td>${escapeHtml(playerFullName(player))}</td>
           <td>${escapeHtml(teamName(player.teamId) || "—")}</td>
           <td>${ageGroup ? escapeHtml(AGE_GROUP_LABELS[ageGroup]) : "—"}</td>
-          <td>${latest ? latest.date : "—"}</td>
+          <td>${latest ? escapeHtml(latest.date) : "—"}</td>
           <td>${total !== null ? total + " / " + TOTAL_MAX_SCORE : "—"}</td>
           <td><strong>${weighted !== null ? weighted + "%" : "—"}</strong></td>
         </tr>`;
