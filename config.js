@@ -1,6 +1,17 @@
-const APP_VERSION = "1.1";
+const APP_VERSION = "1.2";
 
 const APP_CHANGELOG = [
+  {
+    version: "1.2",
+    groups: [
+      {
+        title: "Sonstiges",
+        items: [
+          "Vereinswappen im Header ergänzt."
+        ]
+      }
+    ]
+  },
   {
     version: "1.1",
     groups: [
