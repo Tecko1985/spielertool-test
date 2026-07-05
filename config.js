@@ -1,6 +1,17 @@
-const APP_VERSION = "1.1";
+const APP_VERSION = "1.2";
 
 const APP_CHANGELOG = [
+  {
+    version: "1.2",
+    groups: [
+      {
+        title: "Navigation",
+        items: [
+          "Der Tab „Einstellungen“ (statt bisher „Mannschaften und Gewichtung“) ist jetzt sichtbar von den übrigen Tabs abgesetzt (rechtsbündig in der Tab-Leiste), wie in der Tools-Übersicht."
+        ]
+      }
+    ]
+  },
   {
     version: "1.1",
     groups: [
