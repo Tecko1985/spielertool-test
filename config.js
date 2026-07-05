@@ -1,6 +1,17 @@
-const APP_VERSION = "1.2";
+const APP_VERSION = "1.3";
 
 const APP_CHANGELOG = [
+  {
+    version: "1.3",
+    groups: [
+      {
+        title: "Navigation",
+        items: [
+          "Der Tab „Einstellungen“ zeigt jetzt zusätzlich die aktuelle Versionsnummer direkt am Tab-Reiter an."
+        ]
+      }
+    ]
+  },
   {
     version: "1.2",
     groups: [
