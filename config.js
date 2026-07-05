@@ -1,6 +1,17 @@
-const APP_VERSION = "1.0";
+const APP_VERSION = "1.1";
 
 const APP_CHANGELOG = [
+  {
+    version: "1.1",
+    groups: [
+      {
+        title: "Navigation",
+        items: [
+          "„Zurück zum Dashboard“ ist jetzt ein Button direkt in der blauen Kopfzeile (mittig), statt eines separaten Links darüber."
+        ]
+      }
+    ]
+  },
   {
     version: "1.0",
     groups: [
