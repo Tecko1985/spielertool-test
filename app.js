@@ -1,4 +1,5 @@
 let appData = { teams: [], players: [], evaluations: [], changeRequests: [] };
+let currentUser = null; // {username, isAdmin, groupIds, vorname, nachname} — nur im Gateway-Modus gesetzt, sonst null
 let fileHandle = null;
 let pendingHandle = null;
 let backupDirHandle = null;
@@ -249,6 +250,7 @@ async function init() {
       appData = data && Array.isArray(data.players) ? data : { teams: [], players: [], evaluations: [], changeRequests: [] };
       migrateData(appData);
       autoAssignAllPlayers();
+      try { currentUser = await fetchMe(); } catch (_) { /* best effort, für die Bewerter-Vorbelegung */ }
       await FileStore.setStorageMode("gateway");
       await FileStore.clearWebdavConfig(); // alte, im Klartext gespeicherte Zugangsdaten aufräumen
       startApp();
@@ -1387,8 +1389,12 @@ let currentEvalScores = {};
 
 function renderEvaluateForm() {
   document.getElementById("eval-date").value = document.getElementById("eval-date").value || todayStr();
+  // Bewerter-Feld vorbelegen: im Gateway-Modus mit dem eingeloggten Nutzer (jede
+  // Bewertung soll nachvollziehbar sein, wer sie erfasst hat), sonst mit dem zuletzt
+  // im lokalen Datei-Modus verwendeten Namen. Bleibt in beiden Fällen änderbar.
+  const eigenerName = currentUser ? (`${currentUser.vorname || ""} ${currentUser.nachname || ""}`.trim() || currentUser.username) : "";
   const savedEvaluator = localStorage.getItem("spielertool_evaluator") || "";
-  document.getElementById("eval-evaluator").value = document.getElementById("eval-evaluator").value || savedEvaluator;
+  document.getElementById("eval-evaluator").value = document.getElementById("eval-evaluator").value || eigenerName || savedEvaluator;
 
   const playerId = document.getElementById("eval-player-select").value;
   currentEvalScores = getInitialScoresForPlayer(playerId);

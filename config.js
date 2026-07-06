@@ -1,6 +1,17 @@
-const APP_VERSION = "1.0";
+const APP_VERSION = "1.1";
 
 const APP_CHANGELOG = [
+  {
+    version: "1.1",
+    groups: [
+      {
+        title: "Bewertungserfassung",
+        items: [
+          "Das Bewerter-Feld wird bei einer neuen Bewertung automatisch mit dem eingeloggten Nutzer vorbelegt (bleibt änderbar) — so ist bei jeder Bewertung nachvollziehbar, wer sie erfasst hat."
+        ]
+      }
+    ]
+  },
   {
     version: "1.0",
     groups: [

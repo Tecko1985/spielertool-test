@@ -146,3 +146,9 @@ async function gatewaySave(dataObj) {
   const body = await gatewayRequest(payload);
   gatewayRev = typeof body.rev === "string" ? body.rev : null;
 }
+
+// Liefert {username, isAdmin, groupIds, vorname, nachname} der eingeloggten Person —
+// für die automatische Vorbelegung des Bewerter-Felds bei neuen Bewertungen.
+async function fetchMe() {
+  return gatewayRequest({ action: "me" });
+}
