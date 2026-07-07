@@ -488,7 +488,6 @@ function switchTab(tab) {
     renderProfile();
     renderPlayerComparison();
   }
-  if (tab === "feedback") renderFeedback();
 }
 
 function renderAll() {
@@ -503,7 +502,6 @@ function renderAll() {
   renderEvaluateForm();
   renderProfile();
   renderPlayerComparison();
-  renderFeedback();
 }
 
 // ---------- Versionsinfo ----------
@@ -532,71 +530,6 @@ function renderVersionInfo() {
       ${body}
     </div>`;
   }).join("");
-}
-
-// ---------- Änderungswünsche ----------
-
-function setupFeedbackForm() {
-  document.getElementById("feedback-form").addEventListener("submit", (e) => {
-    e.preventDefault();
-    const textInput = document.getElementById("feedback-text");
-    const authorInput = document.getElementById("feedback-author");
-    const text = textInput.value.trim();
-    if (!text) return;
-    appData.changeRequests.push({
-      id: uuid(),
-      date: todayStr(),
-      author: authorInput.value.trim(),
-      text,
-      status: "offen"
-    });
-    persist();
-    textInput.value = "";
-    renderFeedback();
-  });
-}
-
-function renderFeedback() {
-  const list = document.getElementById("feedback-list");
-  if (!list) return;
-  if (!appData.changeRequests.length) {
-    list.innerHTML = `<div class="empty-state">Noch keine Änderungswünsche eingereicht.</div>`;
-    return;
-  }
-  list.innerHTML = appData.changeRequests
-    .slice()
-    .sort((a, b) => b.date.localeCompare(a.date))
-    .map(
-      (r) => `
-    <div class="feedback-item status-${escapeHtml(r.status)}" data-id="${escapeHtml(r.id)}">
-      <div class="fh">
-        <span class="fmeta">${escapeHtml(r.date)}${r.author ? " · " + escapeHtml(r.author) : ""} · ${r.status === "erledigt" ? "Erledigt" : "Offen"}</span>
-        <div class="row-actions">
-          <button class="btn small secondary" data-action="toggle">${r.status === "erledigt" ? "Wieder öffnen" : "Als erledigt markieren"}</button>
-          <button class="btn small danger" data-action="delete">Löschen</button>
-        </div>
-      </div>
-      <div class="ftext">${escapeHtml(r.text)}</div>
-    </div>`
-    )
-    .join("");
-
-  list.querySelectorAll(".feedback-item").forEach((row) => {
-    const id = row.dataset.id;
-    row.querySelector('[data-action="toggle"]').addEventListener("click", () => {
-      const r = appData.changeRequests.find((x) => x.id === id);
-      if (!r) return;
-      r.status = r.status === "erledigt" ? "offen" : "erledigt";
-      persist();
-      renderFeedback();
-    });
-    row.querySelector('[data-action="delete"]').addEventListener("click", () => {
-      if (!confirm("Diesen Änderungswunsch löschen?")) return;
-      appData.changeRequests = appData.changeRequests.filter((x) => x.id !== id);
-      persist();
-      renderFeedback();
-    });
-  });
 }
 
 // ---------- Team Filter & Team Management ----------
@@ -2062,6 +1995,5 @@ window.addEventListener("DOMContentLoaded", () => {
   setupBackupButtons();
   setupBackupFolder();
   setupExcelImport();
-  setupFeedbackForm();
   init();
 });

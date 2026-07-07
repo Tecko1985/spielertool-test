@@ -362,13 +362,6 @@ table tr:hover td { background: var(--gray); }
 .changelog-group .cg-title { font-weight: 700; font-size: 14px; color: var(--blue); text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 2px; }
 .changelog-group .cg-items { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 3px; color: var(--text); }
 
-.feedback-item { display: flex; flex-direction: column; gap: 4px; padding: 10px; border: 1px solid var(--border); border-radius: 8px; }
-.feedback-item .fh { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
-.feedback-item .fmeta { font-size: 12px; color: var(--muted); }
-.feedback-item .ftext { font-size: 14px; }
-.feedback-item.status-erledigt { opacity: 0.6; }
-.feedback-item.status-erledigt .ftext { text-decoration: line-through; }
-
 .stale-ok { color: var(--green); font-weight: 600; }
 .stale-yellow { color: var(--gold); font-weight: 600; }
 .stale-orange { color: #d4710a; font-weight: 600; }

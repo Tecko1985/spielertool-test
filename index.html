@@ -10,7 +10,7 @@
 <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jspdf-autotable@3.8.2/dist/jspdf.plugin.autotable.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-<link rel="stylesheet" href="style.css?v=1.0" />
+<link rel="stylesheet" href="style.css?v=1.1" />
 </head>
 <body>
 
@@ -76,7 +76,6 @@
     <button data-tab="profile">Spielerprofil &amp; Vergleich</button>
     <button data-tab="teams">Mannschaften und Gewichtung</button>
     <button data-tab="settings" style="margin-left:auto;">Einstellungen <span class="version-badge" id="version-badge-nav"></span></button>
-    <button data-tab="feedback">Änderungswünsche</button>
   </nav>
 
   <main>
@@ -234,27 +233,6 @@
           <button class="btn secondary small" id="btn-choose-backup-folder">Backup-Ordner wählen…</button>
           <button class="btn secondary small" id="btn-backup-now">Jetzt sichern</button>
         </div>
-      </div>
-    </section>
-
-    <!-- Änderungswünsche -->
-    <section class="tab-section" id="tab-feedback">
-      <div class="card">
-        <h2>Änderungswunsch einreichen</h2>
-        <form id="feedback-form">
-          <div class="form-grid">
-            <div class="form-field"><label>Name (optional)</label><input type="text" id="feedback-author" /></div>
-          </div>
-          <div class="form-field" style="margin-bottom:14px;">
-            <label>Wunsch / Idee / Fehler *</label>
-            <textarea id="feedback-text" rows="4" placeholder="Was soll geändert oder ergänzt werden?" required></textarea>
-          </div>
-          <button class="btn" type="submit">Absenden</button>
-        </form>
-      </div>
-      <div class="card">
-        <h2>Eingereichte Wünsche</h2>
-        <div class="player-grid" id="feedback-list"></div>
       </div>
       <div class="card">
         <h3>Versionshistorie <span class="version-badge" id="version-badge-2"></span></h3>
@@ -431,8 +409,8 @@
   </main>
 </div>
 
-<script src="config.js?v=1.1"></script>
+<script src="config.js?v=1.2"></script>
 <script src="db.js?v=1.1"></script>
-<script src="app.js?v=1.1"></script>
+<script src="app.js?v=1.2"></script>
 </body>
 </html>

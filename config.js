@@ -1,6 +1,17 @@
-const APP_VERSION = "1.1";
+const APP_VERSION = "1.2";
 
 const APP_CHANGELOG = [
+  {
+    version: "1.2",
+    groups: [
+      {
+        title: "Feedback",
+        items: [
+          "Der Tab Änderungswünsche wurde entfernt — Feedback und Wünsche bitte jetzt zentral über die Tools-Übersicht im Tab Feedback & Hilfe einreichen."
+        ]
+      }
+    ]
+  },
   {
     version: "1.1",
     groups: [
