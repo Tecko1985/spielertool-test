@@ -1,6 +1,17 @@
-const APP_VERSION = "1.3";
+const APP_VERSION = "1.4";
 
 const APP_CHANGELOG = [
+  {
+    version: "1.4",
+    groups: [
+      {
+        title: "Versionsbadge",
+        items: [
+          "Der Versionshinweis oben neben dem Titel ist jetzt anklickbar und führt direkt zu dieser Änderungsübersicht im Einstellungen-Tab."
+        ]
+      }
+    ]
+  },
   {
     version: "1.3",
     groups: [
