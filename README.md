@@ -6,11 +6,10 @@ Web-App zur Bewertung und Förderung von Nachwuchsspielern im Vereinsbetrieb. L�
 
 - **Dashboard** – Team-Übersicht mit Filter nach Mannschaft, Zeit seit letzter Bewertung und einer Förder-/Beobachtungsschwelle.
 - **Spieler verwalten** – Spieler anlegen, suchen, filtern (Position, Geburtsdatum) und direkt in der Liste bearbeiten. Mannschaftszuordnung erfolgt automatisch über das Geburtsdatum.
-- **Bewertung** – Neue Bewertungen je Spieler erfassen (Kategorien, Notizen, Bewerter, Datum), mit Vergleich zur letzten Bewertung oder zum Bestwert.
+- **Bewertung** – Neue Bewertungen je Spieler erfassen (Kategorien, Notizen, Bewerter, Datum), mit Vergleich zur letzten Bewertung oder zum Bestwert. Das Bewerter-Feld wird automatisch mit dem eingeloggten Nutzer vorbelegt (bleibt änderbar).
 - **Spielerprofil & Vergleich** – Entwicklung eines Spielers über die Zeit (Linien- & Radar-Chart), Bewertungsverlauf als Tabelle, PDF-Export der letzten 3 Bewertungen, Vergleich von bis zu 4 Spielern im Radar-Chart.
 - **Mannschaften und Gewichtung** – Mannschaften mit Geburtsjahrgang anlegen (automatische Alterszuordnung), Altersgewichtungen je Kategorie (Technik & Taktik, Athletik, Mental, Charakter) und Förder-/Beobachtungsschwellen je Altersstufe einstellen.
-- **Einstellungen** – Speicherort verwalten, JSON-Export/-Import als Sicherungskopie, Spieler-Import aus Excel (.xlsx), automatisches Backup beim App-Start in einen gewählten Ordner.
-- **Änderungswünsche** – Feedback/Ideen/Fehler direkt in der App einreichen, inkl. Versionshistorie.
+- **Einstellungen** – Speicherort verwalten, JSON-Export/-Import als Sicherungskopie, Spieler-Import aus Excel (.xlsx), automatisches Backup beim App-Start in einen gewählten Ordner, Versionshistorie. Feedback und Änderungswünsche werden zentral über die Tools-Übersicht (Tab „Feedback & Hilfe“) eingereicht.
 
 ## Datenspeicherung
 

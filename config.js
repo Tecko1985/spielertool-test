@@ -1,50 +1,6 @@
-const APP_VERSION = "1.4";
+const APP_VERSION = "1.0";
 
 const APP_CHANGELOG = [
-  {
-    version: "1.4",
-    groups: [
-      {
-        title: "Versionsbadge",
-        items: [
-          "Der Versionshinweis oben neben dem Titel ist jetzt anklickbar und führt direkt zu dieser Änderungsübersicht im Einstellungen-Tab."
-        ]
-      }
-    ]
-  },
-  {
-    version: "1.3",
-    groups: [
-      {
-        title: "Einstellungen",
-        items: [
-          "Doppelte Versionsanzeige im Einstellungen-Button entfernt."
-        ]
-      }
-    ]
-  },
-  {
-    version: "1.2",
-    groups: [
-      {
-        title: "Feedback",
-        items: [
-          "Der Tab Änderungswünsche wurde entfernt — Feedback und Wünsche bitte jetzt zentral über die Tools-Übersicht im Tab Feedback & Hilfe einreichen."
-        ]
-      }
-    ]
-  },
-  {
-    version: "1.1",
-    groups: [
-      {
-        title: "Bewertungserfassung",
-        items: [
-          "Das Bewerter-Feld wird bei einer neuen Bewertung automatisch mit dem eingeloggten Nutzer vorbelegt (bleibt änderbar) — so ist bei jeder Bewertung nachvollziehbar, wer sie erfasst hat."
-        ]
-      }
-    ]
-  },
   {
     version: "1.0",
     groups: [
@@ -69,6 +25,7 @@ const APP_CHANGELOG = [
         title: "Bewertung",
         items: [
           "Bewertung je Spieler in den Bereichen Technik & Taktik, Athletik, Mentale Stärke sowie Charakter & Sozial.",
+          "Das Bewerter-Feld wird bei einer neuen Bewertung automatisch mit dem eingeloggten Nutzer vorbelegt (bleibt änderbar) — so ist bei jeder Bewertung nachvollziehbar, wer sie erfasst hat.",
           "Rubrik-Texte je Kriterium und Punktstufe als Orientierung.",
           "Anzeige der letzten Bewertung direkt im Bewertungs-Tab.",
           "Altersgerechte, frei editierbare Gewichtung der Bewertungsbereiche je Altersstufe.",
@@ -95,7 +52,7 @@ const APP_CHANGELOG = [
         title: "Sonstiges",
         items: [
           "App ist installierbar (PWA) für app-ähnliche Nutzung ohne Browser-Adressleiste.",
-          "Einstellungsbereich mit Autosave-/Autoload-Status, Versionsinfo und Änderungswünsche-Formular."
+          "Einstellungsbereich mit Autosave-/Autoload-Status und Versionsinfo; Feedback und Änderungswünsche werden zentral über die Tools-Übersicht (Tab „Feedback & Hilfe“) eingereicht."
         ]
       }
     ]
