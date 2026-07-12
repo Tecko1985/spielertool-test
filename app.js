@@ -1,5 +1,10 @@
 let appData = { teams: [], players: [], evaluations: [], changeRequests: [] };
-let currentUser = null; // {username, isAdmin, groupIds, vorname, nachname} — nur im Gateway-Modus gesetzt, sonst null
+let currentUser = null; // {username, isAdmin, groupIds, vorname, nachname, canEdit} — nur im Gateway-Modus gesetzt, sonst null
+
+// Im lokalen Datei-Modus (storageMode !== "gateway") gibt es kein Gruppen-Konzept —
+// wer die Datei lokal geöffnet hat, darf sie wie bisher komplett bearbeiten. Nur im
+// Gateway-Modus entscheidet das server-seitige Bearbeiten-Recht (editGroupIds).
+function canEdit() { return storageMode !== "gateway" || !!(currentUser && (currentUser.isAdmin || currentUser.canEdit)); }
 let fileHandle = null;
 let pendingHandle = null;
 let backupDirHandle = null;
@@ -617,6 +622,7 @@ function setupPlayersExtraFilters() {
 function setupTeamForm() {
   document.getElementById("team-form").addEventListener("submit", (e) => {
     e.preventDefault();
+    if (!canEdit()) return;
     const nameInput = document.getElementById("team-name");
     const fromInput = document.getElementById("team-birthdate-from");
     const toInput = document.getElementById("team-birthdate-to");
@@ -734,6 +740,7 @@ function renderTeams() {
 }
 
 function commitTeamEdit() {
+  if (!canEdit()) return;
   persist();
   populateTeamFilterSelect();
   renderTeams();
@@ -860,6 +867,7 @@ function renderAgeThresholds() {
 }
 
 function deleteTeam(id) {
+  if (!canEdit()) return;
   const t = appData.teams.find((x) => x.id === id);
   if (!t) return;
   const count = appData.players.filter((p) => p.teamId === id).length;
@@ -961,6 +969,7 @@ function escapeHtml(str) {
 function setupPlayerForm() {
   document.getElementById("player-form").addEventListener("submit", (e) => {
     e.preventDefault();
+    if (!canEdit()) return;
     const firstName = document.getElementById("p-firstname").value.trim();
     const lastName = document.getElementById("p-lastname").value.trim();
     if (!firstName && !lastName) return;
@@ -1084,6 +1093,7 @@ function renderPlayers() {
 }
 
 function commitPlayerEdit() {
+  if (!canEdit()) return;
   persist();
   populateTeamFilterSelect();
   populatePlayerSelects();
@@ -1092,6 +1102,7 @@ function commitPlayerEdit() {
 }
 
 function deletePlayer(id) {
+  if (!canEdit()) return;
   const p = appData.players.find((x) => x.id === id);
   if (!p) return;
   if (!confirm(`"${playerFullName(p)}" und alle zugehörigen Bewertungen wirklich löschen?`)) return;
@@ -1392,6 +1403,7 @@ function setupEvaluateForm() {
 
   document.getElementById("evaluate-form").addEventListener("submit", (e) => {
     e.preventDefault();
+    if (!canEdit()) return;
     const playerId = document.getElementById("eval-player-select").value;
     if (!playerId) {
       alert("Bitte einen Spieler wählen.");
@@ -1501,6 +1513,7 @@ function renderProfileHistoryTable(evals, ageGroup) {
 
   tbody.querySelectorAll('[data-action="del-eval"]').forEach((btn) => {
     btn.addEventListener("click", (e) => {
+      if (!canEdit()) return;
       const id = e.target.closest("tr").dataset.id;
       if (!confirm("Diese Bewertung löschen?")) return;
       appData.evaluations = appData.evaluations.filter((ev) => ev.id !== id);
