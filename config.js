@@ -2,17 +2,6 @@ const APP_VERSION = "1.0";
 
 const APP_CHANGELOG = [
   {
-    version: "1.1",
-    groups: [
-      {
-        title: "Bearbeiten-Recht",
-        items: [
-          "Teams/Spieler anlegen, bearbeiten, löschen sowie Bewertungen erfassen/löschen jetzt (im Gateway-Modus) an das Bearbeiten-Recht der Gruppen-Verwaltung gekoppelt statt an reinen Tool-Zugriff. Im lokalen Datei-Modus unverändert."
-        ]
-      }
-    ]
-  },
-  {
     version: "1.0",
     groups: [
       {
