@@ -1,6 +1,18 @@
-const APP_VERSION = "1.0";
+const APP_VERSION = "1.1";
 
 const APP_CHANGELOG = [
+  {
+    version: "1.1",
+    groups: [
+      {
+        title: "Spielertyp",
+        items: [
+          "Neues Feld Spielertyp (Feldspieler/Torhüter) beim Anlegen eines Spielers und in der Spielerliste editierbar.",
+          "Grundlage für eine eigene Torwart-Bewertung in einer der nächsten Versionen — aktuell wirkt sich der Spielertyp noch nicht auf die Bewertungskategorien aus."
+        ]
+      }
+    ]
+  },
   {
     version: "1.0",
     groups: [

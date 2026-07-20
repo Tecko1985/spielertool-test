@@ -93,6 +93,7 @@ function migrateData(data) {
     if (p.firstName === undefined) p.firstName = "";
     if (p.lastName === undefined) p.lastName = "";
     delete p.name;
+    if (p.spielertyp === undefined) p.spielertyp = "feldspieler";
   });
   return data;
 }
@@ -979,6 +980,7 @@ function setupPlayerForm() {
       lastName,
       teamId: null,
       position: document.getElementById("p-position").value.trim(),
+      spielertyp: document.getElementById("p-spielertyp").value,
       birthdate: document.getElementById("p-birthdate").value,
       createdAt: new Date().toISOString()
     };
@@ -999,6 +1001,14 @@ function teamOptionsHtml(selectedId) {
     .map((t) => `<option value="${escapeHtml(t.id)}" ${t.id === selectedId ? "selected" : ""}>${escapeHtml(t.name)}</option>`)
     .join("");
   return `<option value="" ${!selectedId ? "selected" : ""}>— ohne Mannschaft —</option>` + options;
+}
+
+function spielertypOptionsHtml(selected) {
+  const val = selected === "torhueter" ? "torhueter" : "feldspieler";
+  return (
+    `<option value="feldspieler" ${val === "feldspieler" ? "selected" : ""}>Feldspieler</option>` +
+    `<option value="torhueter" ${val === "torhueter" ? "selected" : ""}>Torhüter</option>`
+  );
 }
 
 function populatePlayersPositionFilter() {
@@ -1056,6 +1066,7 @@ function renderPlayers() {
       <input type="text" class="p-edit-firstname" value="${escapeHtml(p.firstName || "")}" placeholder="Vorname" />
       <input type="text" class="p-edit-lastname" value="${escapeHtml(p.lastName || "")}" placeholder="Nachname" />
       <input type="text" class="p-edit-position" value="${escapeHtml(p.position || "")}" placeholder="Position" />
+      <select class="p-edit-spielertyp">${spielertypOptionsHtml(p.spielertyp)}</select>
       <input type="date" class="p-edit-birthdate" value="${escapeHtml(p.birthdate || "")}" />
       <select class="p-edit-team">${teamOptionsHtml(p.teamId)}</select>
       <button class="btn small danger" data-action="delete">Löschen</button>
@@ -1077,6 +1088,10 @@ function renderPlayers() {
     });
     row.querySelector(".p-edit-position").addEventListener("change", (e) => {
       player.position = e.target.value.trim();
+      commitPlayerEdit();
+    });
+    row.querySelector(".p-edit-spielertyp").addEventListener("change", (e) => {
+      player.spielertyp = e.target.value;
       commitPlayerEdit();
     });
     row.querySelector(".p-edit-birthdate").addEventListener("change", (e) => {
@@ -1893,6 +1908,7 @@ function importPlayersFromRows(rows) {
       lastName,
       teamId: null,
       position,
+      spielertyp: "feldspieler",
       birthdate,
       createdAt: new Date().toISOString()
     };

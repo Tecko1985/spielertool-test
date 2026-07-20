@@ -10,7 +10,7 @@
 <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jspdf-autotable@3.8.2/dist/jspdf.plugin.autotable.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-<link rel="stylesheet" href="style.css?v=1.0" />
+<link rel="stylesheet" href="style.css?v=1.1" />
 </head>
 <body>
 
@@ -249,6 +249,13 @@
             <div class="form-field"><label>Vorname</label><input type="text" id="p-firstname" /></div>
             <div class="form-field"><label>Nachname *</label><input type="text" id="p-lastname" required /></div>
             <div class="form-field"><label>Position</label><input type="text" id="p-position" placeholder="z.B. ZM, IV, ST" /></div>
+            <div class="form-field">
+              <label>Spielertyp</label>
+              <select id="p-spielertyp">
+                <option value="feldspieler">Feldspieler</option>
+                <option value="torhueter">Torhüter</option>
+              </select>
+            </div>
             <div class="form-field"><label>Geburtsdatum</label><input type="date" id="p-birthdate" /></div>
           </div>
           <p class="muted" style="margin-bottom:12px;">
@@ -294,7 +301,7 @@
         </div>
         <p class="muted" style="margin-bottom:10px;">Felder direkt anklicken und bearbeiten – die Änderung wird beim Verlassen des Feldes übernommen.</p>
         <div class="player-edit-row player-edit-header">
-          <span>Vorname</span><span>Nachname</span><span>Position</span><span>Geburtsdatum</span><span>Mannschaft</span><span></span>
+          <span>Vorname</span><span>Nachname</span><span>Position</span><span>Spielertyp</span><span>Geburtsdatum</span><span>Mannschaft</span><span></span>
         </div>
         <div class="player-grid" id="players-list"></div>
       </div>
@@ -409,8 +416,8 @@
   </main>
 </div>
 
-<script src="config.js?v=1.0"></script>
-<script src="db.js?v=1.0"></script>
-<script src="app.js?v=1.0"></script>
+<script src="config.js?v=1.1"></script>
+<script src="db.js?v=1.1"></script>
+<script src="app.js?v=1.1"></script>
 </body>
 </html>
