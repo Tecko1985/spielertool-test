@@ -10,7 +10,7 @@
 <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jspdf-autotable@3.8.2/dist/jspdf.plugin.autotable.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-<link rel="stylesheet" href="style.css?v=1.1" />
+<link rel="stylesheet" href="style.css?v=1.2" />
 </head>
 <body>
 
@@ -159,10 +159,11 @@
           Bestimmt, wie stark Technik &amp; Taktik, Athletik, Mentale Stärke und Charakter &amp; Sozial je Altersstufe in den
           gewichteten Gesamtwert (%) einfließen. Die Mannschaft eines Spielers wird über sein Geburtsdatum automatisch einer
           Altersstufe zugeordnet (≤10 Jahre = F/E, 11–14 = D/C, 15–18 = A/B). Werte je Zeile müssen in Summe 100 ergeben.
+          Bei Torhütern tritt das Torwartspiel an die Stelle von Technik &amp; Taktik und wird genauso gewichtet.
         </p>
         <div id="weights-criteria-legend" style="margin-bottom:14px;"></div>
         <div class="weights-row weights-header">
-          <span>Altersstufe</span><span>Technik &amp; Taktik</span><span>Athletik</span><span>Mental</span><span>Charakter</span><span>Summe</span>
+          <span>Altersstufe</span><span>Technik &amp; Taktik<br /><span class="muted" style="font-weight:400;">bzw. Torwartspiel</span></span><span>Athletik</span><span>Mental</span><span>Charakter</span><span>Summe</span>
         </div>
         <div id="age-weights-list"></div>
       </div>
@@ -373,6 +374,10 @@
           <div class="form-field"><label>Spieler 4</label><select id="compare-player-4"></select></div>
         </div>
         <div class="chart-wrap" style="max-width:480px; margin:0 auto 18px;"><canvas id="compare-radar-chart"></canvas></div>
+        <p class="muted" id="compare-mixed-hint" style="display:none; margin:-8px 0 14px;">
+          Hinweis: Es werden Torhüter und Feldspieler zusammen verglichen. Die erste Achse steht bei Torhütern
+          für das Torwartspiel und bei Feldspielern für Technik &amp; Taktik – sie ist inhaltlich nicht direkt vergleichbar.
+        </p>
         <div class="empty-state" id="compare-empty" style="display:none;">Bitte mindestens einen Spieler auswählen.</div>
         <table id="compare-table" style="display:none;">
           <thead>
@@ -416,8 +421,8 @@
   </main>
 </div>
 
-<script src="config.js?v=1.1"></script>
-<script src="db.js?v=1.1"></script>
-<script src="app.js?v=1.1"></script>
+<script src="config.js?v=1.2"></script>
+<script src="db.js?v=1.2"></script>
+<script src="app.js?v=1.2"></script>
 </body>
 </html>

@@ -1,14 +1,30 @@
-const APP_VERSION = "1.1";
+const APP_VERSION = "1.2";
 
 const APP_CHANGELOG = [
+  {
+    version: "1.2",
+    groups: [
+      {
+        title: "Eigene Bewertung für Torhüter",
+        items: [
+          "Bei Spielern mit dem Spielertyp Torhüter tritt im Bewertungsformular der Bereich Torwartspiel an die Stelle von Technik & Taktik — mit sieben eigenen Kriterien: Reflexe/Schusshalten, Stellungsspiel, Fangverhalten/Ballsicherheit, Eins-gegen-eins-Verhalten, Flanken/Hereingaben, Spielaufbau mit dem Fuß sowie Kommunikation & Organisation.",
+          "Zu jedem Torwart-Kriterium gibt es dieselbe Bewertungshilfe wie bei den Feldspielern (Beschreibung für 1, 5 und 10 Punkte).",
+          "Athletik, Mentale Stärke und Charakter & Sozial gelten unverändert für beide Spielertypen.",
+          "Altersgewichtung und Förderschwelle bleiben unverändert: das Torwartspiel zählt genauso viel wie Technik & Taktik, es muss nichts zusätzlich eingestellt werden.",
+          "Spielerprofil, Verlaufs- und Radar-Diagramme sowie der PDF-Export zeigen bei Torhütern automatisch die Torwart-Kriterien.",
+          "Beim Vergleich einer Bewertung wird nur noch derselbe Spielertyp zur Auswahl angeboten; im Spielervergleich weist ein Hinweis darauf hin, wenn Torhüter und Feldspieler gemeinsam dargestellt werden.",
+          "Wird ein Spieler nachträglich vom Feldspieler zum Torhüter umgestellt (oder umgekehrt), werden die Werte des alten Typs nicht mehr in neue Bewertungen übernommen und fließen nicht in den Gesamtscore ein."
+        ]
+      }
+    ]
+  },
   {
     version: "1.1",
     groups: [
       {
         title: "Spielertyp",
         items: [
-          "Neues Feld Spielertyp (Feldspieler/Torhüter) beim Anlegen eines Spielers und in der Spielerliste editierbar.",
-          "Grundlage für eine eigene Torwart-Bewertung in einer der nächsten Versionen — aktuell wirkt sich der Spielertyp noch nicht auf die Bewertungskategorien aus."
+          "Neues Feld Spielertyp (Feldspieler/Torhüter) beim Anlegen eines Spielers und in der Spielerliste editierbar."
         ]
       }
     ]
@@ -126,6 +142,35 @@ const SCORE_CATEGORIES = [
   }
 ];
 
+// Torwart-Variante der Kategorie "Technik & Taktik" (t1). Bewusst dieselbe id und dieselbe
+// Maximalpunktzahl wie die Feldspieler-Kategorie: dadurch gelten die Altersgewichtungen und
+// die Förderschwelle unverändert für beide Spielertypen. Nur die Kriterien dahinter sind andere
+// (Keys mit tw_-Präfix, damit gespeicherte Bewertungen der beiden Typen nie kollidieren).
+const GK_CATEGORY = {
+  id: "t1",
+  label: "Torwartspiel",
+  max: 70,
+  criteria: [
+    { key: "tw_reflexe", label: "Reflexe/Schusshalten" },
+    { key: "tw_stellungsspiel", label: "Stellungsspiel" },
+    { key: "tw_fangsicherheit", label: "Fangverhalten/Ballsicherheit" },
+    { key: "tw_eins_gegen_eins", label: "Eins-gegen-eins-Verhalten" },
+    { key: "tw_flanken", label: "Flanken/Hereingaben" },
+    { key: "tw_spielaufbau", label: "Spielaufbau mit dem Fuß" },
+    { key: "tw_organisation", label: "Kommunikation & Organisation" }
+  ]
+};
+
+// Die für einen konkreten Spieler gültigen Kategorien: bei Torhütern ersetzt das Torwartspiel
+// die Feldspieler-Technik, alle übrigen Kategorien sind für beide Typen identisch.
+function scoreCategoriesFor(player) {
+  if (!player || player.spielertyp !== "torhueter") return SCORE_CATEGORIES;
+  return SCORE_CATEGORIES.map((cat) => (cat.id === "t1" ? GK_CATEGORY : cat));
+}
+
+// Alle je vorkommenden Kategorien – nur für die reine Punktsumme, siehe totalScore() in app.js.
+const ALL_SCORE_CATEGORIES = SCORE_CATEGORIES.concat([GK_CATEGORY]);
+
 const TOTAL_MAX_SCORE = SCORE_CATEGORIES.reduce((sum, c) => sum + c.max, 0);
 
 // Altersstufen-Gewichtung: wie stark Technik & Taktik(t1)/Athletik(t3)/Mentale Stärke(t4)/
@@ -183,6 +228,41 @@ const AGE_GROUP_FOCUS = {
 };
 
 const CRITERIA_RUBRIC = {
+  tw_reflexe: {
+    1: "Reagiert auf platzierte oder überraschende Schüsse zu spät. Lässt viele Bälle abprallen oder durchrutschen, auch aus kurzer Distanz.",
+    5: "Hält Standardschüsse sicher, auch aus kurzem Abstand. Braucht bei abgefälschten oder sehr schnellen Bällen noch etwas Reaktionszeit.",
+    10: "Extrem schnelle Reaktion auch auf abgefälschte oder Nahdistanz-Schüsse. Lenkt schwer haltbare Bälle kontrolliert um den Pfosten oder über die Latte."
+  },
+  tw_stellungsspiel: {
+    1: "Steht häufig falsch zum Ball, verkürzt den Winkel nicht. Wird regelmäßig am kurzen oder langen Eck überrascht.",
+    5: "Grundposition und Winkelverkürzung bei zentralen Abschlüssen solide. Bei spitzem Winkel oder nach Verlagerung noch verzögert.",
+    10: "Passt die Position ständig vorausschauend an Ball und Gegnerlauf an. Macht das Tor durch perfektes Stellungsspiel klein, wirkt fast nie überrascht."
+  },
+  tw_fangsicherheit: {
+    1: "Lässt Bälle häufig abprallen, die sicher zu fangen wären. Fangtechnik unsauber, verliert oft die Kontrolle beim ersten Kontakt.",
+    5: "Fängt Standardbälle in Bauch- und Brusthöhe sicher. Bei schwierigen Bällen (tief, hart, nass) eher Abwehr oder Boxen statt Fangen.",
+    10: "Fängt nahezu alles Fangbare, auch unter Druck oder bei schlechten Bedingungen. Entscheidet in Sekundenbruchteilen richtig zwischen Fangen, Boxen und Fausten."
+  },
+  tw_eins_gegen_eins: {
+    1: "Kommt zu spät oder zu unentschlossen heraus. Timing und Körperstellung im Duell meist falsch.",
+    5: "Reduziert den Schusswinkel im direkten Duell solide. Timing beim Herauslaufen noch nicht immer optimal.",
+    10: "Perfektes Timing beim Herauskommen, zwingt den Angreifer fast immer zur Entscheidung unter Druck."
+  },
+  tw_flanken: {
+    1: "Bleibt bei Flanken meist auf der Linie oder greift unsicher und zu spät ein.",
+    5: "Fängt oder faustet Flanken im Nahbereich zuverlässig ab. Bei langen und verlagerten Hereingaben noch zurückhaltend.",
+    10: "Dominiert den eigenen Strafraum bei Hereingaben, exzellentes Timing und Sprungkraft. Entscheidet situativ sicher zwischen Fangen, Fausten und Herauslaufen."
+  },
+  tw_spielaufbau: {
+    1: "Abschläge und Abwürfe zu unpräzise oder unsicher für sauberes Anspiel. Meidet den kurzen Aufbau unter Druck.",
+    5: "Spielt sichere Standardpässe und Abschläge, auch unter leichtem Druck. Variiert Tempo und Höhe noch wenig.",
+    10: "Beidfüßig sicher auch unter hohem Anlaufdruck. Eröffnet gezielt Räume und ist ein voll integrierter zusätzlicher Anspielpunkt."
+  },
+  tw_organisation: {
+    1: "Gibt kaum oder unklare Ansagen. Abwehrkette wirkt unorganisiert, Abseitslinie wird selten koordiniert.",
+    5: "Gibt situationsbedingte Standardkommandos (Mann, Ecke, Klären). Organisiert die Kette in ruhigen Phasen ordentlich.",
+    10: "Dirigiert die gesamte Kette durchgehend laut und klar, auch in hektischen Phasen. Erkennt Gefahr früh und organisiert präventiv."
+  },
   t1_passspiel: {
     1: "Pässe sind unpräzise, zu langsam oder zu hart. Spielt fast nur Rückpässe oder einfache Querpässe. Nutzt nur einen Fuß.",
     5: "Spielt Pässe sicher und in den Fuß. Kann einfache Pressingsituationen mit Passspiel lösen. Beherrscht Standard-Pässe (kurz/lang).",

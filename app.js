@@ -136,11 +136,11 @@ function getAgeGroupForTeam(team) {
   return getAgeGroupForAge(calculateAge(team.birthdateFrom || team.birthdateTo));
 }
 
-function weightedPercent(scores, ageGroup) {
+function weightedPercent(scores, ageGroup, player) {
   const weights = ageGroup && appData.ageGroupWeights ? appData.ageGroupWeights[ageGroup] : null;
   if (!weights) return totalScore(scores) / TOTAL_MAX_SCORE * 100;
   let sum = 0;
-  SCORE_CATEGORIES.forEach((cat) => {
+  scoreCategoriesFor(player).forEach((cat) => {
     const pct = (categorySubtotal(scores, cat) / cat.max) * 100;
     sum += pct * ((Number(weights[cat.id]) || 0) / 100);
   });
@@ -788,10 +788,14 @@ function renderCriteriaLegend() {
     <details>
       <summary>Welche Kriterien zählen zu welchem Bereich?</summary>
       <div class="rubric-grid" style="grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));">
-        ${SCORE_CATEGORIES.map(
-          (cat) => `<div><b>${escapeHtml(cat.label)}</b>${cat.criteria.map((c) => escapeHtml(c.label)).join(", ")}</div>`
+        ${ALL_SCORE_CATEGORIES.map(
+          (cat) => `<div><b>${escapeHtml(cat.label)}${cat === GK_CATEGORY ? " (nur Torhüter)" : ""}</b>${cat.criteria.map((c) => escapeHtml(c.label)).join(", ")}</div>`
         ).join("")}
       </div>
+      <p class="muted" style="margin-top:8px;">
+        Bei Torhütern ersetzt das Torwartspiel den Bereich Technik &amp; Taktik. Beide zählen gleich viel,
+        die Gewichtung unten gilt daher unverändert für beide Spielertypen.
+      </p>
     </details>
   `;
 }
@@ -900,8 +904,24 @@ function categorySubtotal(scores, category) {
   return category.criteria.reduce((sum, c) => sum + (Number(scores[c.key]) || 0), 0);
 }
 
+// Summiert über alle je vorkommenden Kategorien inkl. der Torwart-Variante. Da eine Bewertung
+// immer nur die Kriterien-Keys ihres Spielertyps enthält, steuert die jeweils andere Variante
+// 0 Punkte bei — die Summe stimmt dadurch für Feldspieler und Torhüter ohne Spielerkontext.
 function totalScore(scores) {
-  return SCORE_CATEGORIES.reduce((sum, cat) => sum + categorySubtotal(scores, cat), 0);
+  return ALL_SCORE_CATEGORIES.reduce((sum, cat) => sum + categorySubtotal(scores, cat), 0);
+}
+
+// Beschränkt eine Bewertung auf die Kriterien des jeweiligen Spielertyps. Nötig, wenn ein
+// Spieler nach einer Bewertung den Typ wechselt: sonst blieben die Werte des alten Typs in
+// der Bewertung stehen und würden in totalScore() zusätzlich mitgezählt.
+function pickScoresForPlayer(scores, player) {
+  const erlaubt = new Set();
+  scoreCategoriesFor(player).forEach((cat) => cat.criteria.forEach((c) => erlaubt.add(c.key)));
+  const gefiltert = {};
+  Object.keys(scores || {}).forEach((key) => {
+    if (erlaubt.has(key)) gefiltert[key] = scores[key];
+  });
+  return gefiltert;
 }
 
 function latestEvaluationFor(playerId) {
@@ -954,7 +974,13 @@ function populateComparePlayerSelect() {
   const sel = document.getElementById("eval-compare-player-select");
   if (!sel) return;
   const current = sel.value;
+  // Nur Spieler desselben Typs zur Auswahl stellen: ein Feldspieler hat keine Werte zu den
+  // Torwart-Kriterien (und umgekehrt), ein typübergreifender Vergleich liefe dort ins Leere.
+  const evalPlayerSel = document.getElementById("eval-player-select");
+  const evalPlayer = evalPlayerSel ? appData.players.find((p) => p.id === evalPlayerSel.value) : null;
+  const istTorwart = !!evalPlayer && evalPlayer.spielertyp === "torhueter";
   const options = filteredPlayers()
+    .filter((p) => !evalPlayer || p.id === evalPlayer.id || (p.spielertyp === "torhueter") === istTorwart)
     .sort((a, b) => playerFullName(a).localeCompare(playerFullName(b)))
     .map((p) => `<option value="${escapeHtml(p.id)}">${escapeHtml(playerFullName(p))}${p.teamId ? " (" + escapeHtml(teamName(p.teamId)) + ")" : ""}</option>`)
     .join("");
@@ -1156,7 +1182,7 @@ function renderDashboard() {
       const total = last ? totalScore(last.scores) : null;
       const pct = total !== null ? Math.round((total / TOTAL_MAX_SCORE) * 100) : 0;
       const ageGroup = getAgeGroupForPlayer(p);
-      const weighted = last ? Math.round(weightedPercent(last.scores, ageGroup)) : null;
+      const weighted = last ? Math.round(weightedPercent(last.scores, ageGroup, p)) : null;
       const days = last ? daysSince(last.date) : null;
       return { p, last, total, pct, weighted, ageGroup, days };
     });
@@ -1274,11 +1300,11 @@ function getBestForCriterion(critKey, comparePlayerId) {
   return best;
 }
 
-function renderCategoryFields(container, scores, onChange) {
+function renderCategoryFields(container, scores, onChange, player) {
   container.innerHTML = "";
   const compareSelect = document.getElementById("eval-compare-player-select");
   const comparePlayerId = compareSelect ? compareSelect.value : "";
-  SCORE_CATEGORIES.forEach((cat) => {
+  scoreCategoriesFor(player).forEach((cat) => {
     const card = document.createElement("div");
     card.className = "category-card";
     card.innerHTML = `
@@ -1322,7 +1348,7 @@ function renderCategoryFields(container, scores, onChange) {
         scores[crit.key] = clamped;
         rangeInput.value = clamped;
         numberInput.value = clamped;
-        updateCategorySubtotals(container, scores);
+        updateCategorySubtotals(container, scores, player);
         onChange();
       };
 
@@ -1340,13 +1366,14 @@ function renderCategoryFields(container, scores, onChange) {
     });
     container.appendChild(card);
   });
-  updateCategorySubtotals(container, scores);
+  updateCategorySubtotals(container, scores, player);
 }
 
-function updateCategorySubtotals(container, scores) {
-  SCORE_CATEGORIES.forEach((cat) => {
+function updateCategorySubtotals(container, scores, player) {
+  scoreCategoriesFor(player).forEach((cat) => {
     const subtotal = categorySubtotal(scores, cat);
-    container.querySelector(`[data-cat="${cat.id}"]`).textContent = `${subtotal} / ${cat.max}`;
+    const el = container.querySelector(`[data-cat="${cat.id}"]`);
+    if (el) el.textContent = `${subtotal} / ${cat.max}`;
   });
 }
 
@@ -1364,7 +1391,8 @@ function renderEvaluateForm() {
   const playerId = document.getElementById("eval-player-select").value;
   currentEvalScores = getInitialScoresForPlayer(playerId);
   const container = document.getElementById("eval-categories");
-  renderCategoryFields(container, currentEvalScores, updateEvalTotal);
+  const player = appData.players.find((p) => p.id === playerId);
+  renderCategoryFields(container, currentEvalScores, updateEvalTotal, player);
   updateEvalTotal();
   updateLastEvaluationInfo();
 }
@@ -1372,7 +1400,9 @@ function renderEvaluateForm() {
 function getInitialScoresForPlayer(playerId) {
   if (!playerId) return {};
   const last = latestEvaluationFor(playerId);
-  return last ? { ...last.scores } : {};
+  if (!last) return {};
+  const player = appData.players.find((p) => p.id === playerId);
+  return pickScoresForPlayer(last.scores, player);
 }
 
 function updateLastEvaluationInfo() {
@@ -1396,7 +1426,7 @@ function updateEvalTotal() {
   const playerId = document.getElementById("eval-player-select").value;
   const player = appData.players.find((p) => p.id === playerId);
   const ageGroup = player ? getAgeGroupForPlayer(player) : null;
-  const weighted = Math.round(weightedPercent(currentEvalScores, ageGroup));
+  const weighted = Math.round(weightedPercent(currentEvalScores, ageGroup, player));
   const ageGroupLabel = ageGroup ? AGE_GROUP_LABELS[ageGroup] : "keine Altersstufe";
   document.getElementById("eval-total-val").innerHTML =
     `${total} / ${TOTAL_MAX_SCORE} <span class="muted" style="font-size:13px;">· gewichtet ${weighted}% (${escapeHtml(ageGroupLabel)})</span>`;
@@ -1406,13 +1436,18 @@ function setupEvaluateForm() {
   document.getElementById("eval-player-select").addEventListener("change", () => {
     const playerId = document.getElementById("eval-player-select").value;
     currentEvalScores = getInitialScoresForPlayer(playerId);
-    renderCategoryFields(document.getElementById("eval-categories"), currentEvalScores, updateEvalTotal);
+    // Spielertyp neu auflösen: bei einem Wechsel zwischen Feldspieler und Torhüter
+    // müssen die Kriterien-Karten komplett neu aufgebaut werden.
+    const player = appData.players.find((p) => p.id === playerId);
+    populateComparePlayerSelect();
+    renderCategoryFields(document.getElementById("eval-categories"), currentEvalScores, updateEvalTotal, player);
     updateEvalTotal();
     updateLastEvaluationInfo();
   });
 
   document.getElementById("eval-compare-player-select").addEventListener("change", () => {
-    renderCategoryFields(document.getElementById("eval-categories"), currentEvalScores, updateEvalTotal);
+    const player = appData.players.find((p) => p.id === document.getElementById("eval-player-select").value);
+    renderCategoryFields(document.getElementById("eval-categories"), currentEvalScores, updateEvalTotal, player);
     updateEvalTotal();
   });
 
@@ -1434,7 +1469,7 @@ function setupEvaluateForm() {
       date,
       evaluator,
       notes: document.getElementById("eval-notes").value.trim(),
-      scores: { ...currentEvalScores }
+      scores: pickScoresForPlayer(currentEvalScores, appData.players.find((p) => p.id === playerId))
     };
     appData.evaluations.push(evaluation);
     persist();
@@ -1471,15 +1506,16 @@ function renderProfile() {
   const ageGroup = getAgeGroupForPlayer(player);
   document.getElementById("profile-name").textContent = playerFullName(player);
   document.getElementById("profile-meta").textContent =
-    `${player.position || "—"} · ${teamName(player.teamId) || "ohne Mannschaft"}${player.jersey ? " · #" + player.jersey : ""}` +
+    `${player.position || "—"} · ${player.spielertyp === "torhueter" ? "Torhüter" : "Feldspieler"}` +
+    ` · ${teamName(player.teamId) || "ohne Mannschaft"}${player.jersey ? " · #" + player.jersey : ""}` +
     ` · ${ageGroup ? AGE_GROUP_LABELS[ageGroup] : "keine Altersstufe"}`;
 
   const evals = evaluationsFor(playerId);
-  renderProfileHistoryTable(evals, ageGroup);
-  renderProfileCharts(evals);
+  renderProfileHistoryTable(evals, ageGroup, player);
+  renderProfileCharts(evals, player);
 }
 
-function renderProfileHistoryTable(evals, ageGroup) {
+function renderProfileHistoryTable(evals, ageGroup, player) {
   const tbody = document.getElementById("profile-history-tbody");
   if (!evals.length) {
     tbody.innerHTML = `<tr><td colspan="6" class="empty-state">Noch keine Bewertungen für diesen Spieler.</td></tr>`;
@@ -1491,7 +1527,7 @@ function renderProfileHistoryTable(evals, ageGroup) {
     .map((ev) => {
       const total = totalScore(ev.scores);
       const pct = Math.round((total / TOTAL_MAX_SCORE) * 100);
-      const weighted = Math.round(weightedPercent(ev.scores, ageGroup));
+      const weighted = Math.round(weightedPercent(ev.scores, ageGroup, player));
       return `
       <tr data-id="${escapeHtml(ev.id)}">
         <td>${escapeHtml(ev.date)}</td>
@@ -1510,7 +1546,7 @@ function renderProfileHistoryTable(evals, ageGroup) {
         </td>
       </tr>
       <tr class="eval-detail-row" data-detail-id="${escapeHtml(ev.id)}" style="display:none;">
-        <td colspan="6">${renderEvalDetailHtml(ev)}</td>
+        <td colspan="6">${renderEvalDetailHtml(ev, player)}</td>
       </tr>`;
     })
     .join("");
@@ -1539,8 +1575,8 @@ function renderProfileHistoryTable(evals, ageGroup) {
   });
 }
 
-function renderEvalDetailHtml(ev) {
-  return SCORE_CATEGORIES.map((cat) => {
+function renderEvalDetailHtml(ev, player) {
+  return scoreCategoriesFor(player).map((cat) => {
     const subtotal = categorySubtotal(ev.scores, cat);
     const rows = cat.criteria
       .map((crit) => `<div class="eval-detail-item"><span>${escapeHtml(crit.label)}</span><span class="eval-detail-val">${escapeHtml(ev.scores[crit.key] ?? "—")}</span></div>`)
@@ -1553,7 +1589,8 @@ function renderEvalDetailHtml(ev) {
   }).join("");
 }
 
-function renderProfileCharts(evals) {
+function renderProfileCharts(evals, player) {
+  const cats = scoreCategoriesFor(player);
   const lineCtx = document.getElementById("profile-line-chart").getContext("2d");
   const radarCtx = document.getElementById("profile-radar-chart").getContext("2d");
 
@@ -1573,7 +1610,7 @@ function renderProfileCharts(evals) {
     }
   ];
   const palette = ["#2d8c4e", "#c0392b", "#c9941f", "#7a5cc7", "#1a9ba0"];
-  SCORE_CATEGORIES.forEach((cat, i) => {
+  cats.forEach((cat, i) => {
     datasets.push({
       label: cat.label,
       data: evals.map((e) => categorySubtotal(e.scores, cat)),
@@ -1604,16 +1641,16 @@ function renderProfileCharts(evals) {
   const radarDatasets = compareEvals.length
     ? compareEvals.map((ev, i) => ({
         label: ev.date,
-        data: SCORE_CATEGORIES.map((cat) => Math.round((categorySubtotal(ev.scores, cat) / cat.max) * 100)),
+        data: cats.map((cat) => Math.round((categorySubtotal(ev.scores, cat) / cat.max) * 100)),
         borderColor: radarColors[i].border,
         backgroundColor: radarColors[i].bg
       }))
-    : [{ label: "Keine Daten", data: SCORE_CATEGORIES.map(() => 0), borderColor: "#1a56a0", backgroundColor: "rgba(26,86,160,0.2)" }];
+    : [{ label: "Keine Daten", data: cats.map(() => 0), borderColor: "#1a56a0", backgroundColor: "rgba(26,86,160,0.2)" }];
 
   profileCharts.radar = new Chart(radarCtx, {
     type: "radar",
     data: {
-      labels: SCORE_CATEGORIES.map((c) => c.label),
+      labels: cats.map((c) => c.label),
       datasets: radarDatasets
     },
     options: {
@@ -1668,7 +1705,7 @@ function renderPlayerComparison() {
     .map(({ player, latest, ageGroup }) => {
       if (!player) return "";
       const total = latest ? totalScore(latest.scores) : null;
-      const weighted = latest ? Math.round(weightedPercent(latest.scores, ageGroup)) : null;
+      const weighted = latest ? Math.round(weightedPercent(latest.scores, ageGroup, player)) : null;
       return `
         <tr>
           <td>${escapeHtml(playerFullName(player))}</td>
@@ -1681,19 +1718,28 @@ function renderPlayerComparison() {
     })
     .join("");
 
-  const radarDatasets = entries
-    .filter((e) => e.player)
-    .map((e, i) => ({
-      label: playerFullName(e.player),
-      data: SCORE_CATEGORIES.map((cat) => (e.latest ? Math.round((categorySubtotal(e.latest.scores, cat) / cat.max) * 100) : 0)),
-      borderColor: palette[i % palette.length],
-      backgroundColor: palette[i % palette.length] + "33"
-    }));
+  // Jeder Spieler wird an seinen eigenen Kategorien gemessen (Torhüter am Torwartspiel,
+  // Feldspieler an Technik & Taktik). Da beide Varianten dieselbe Reihenfolge und dieselben
+  // Maximalwerte haben, bleiben die Prozentwerte auf einer gemeinsamen Achse darstellbar.
+  const vorhandenePlayer = entries.filter((e) => e.player);
+  const radarDatasets = vorhandenePlayer.map((e, i) => ({
+    label: playerFullName(e.player),
+    data: scoreCategoriesFor(e.player).map((cat) => (e.latest ? Math.round((categorySubtotal(e.latest.scores, cat) / cat.max) * 100) : 0)),
+    borderColor: palette[i % palette.length],
+    backgroundColor: palette[i % palette.length] + "33"
+  }));
+
+  const anzahlTorhueter = vorhandenePlayer.filter((e) => e.player.spielertyp === "torhueter").length;
+  const gemischt = anzahlTorhueter > 0 && anzahlTorhueter < vorhandenePlayer.length;
+  const hintEl = document.getElementById("compare-mixed-hint");
+  if (hintEl) hintEl.style.display = gemischt ? "block" : "none";
+  const radarLabels = scoreCategoriesFor(gemischt ? null : vorhandenePlayer[0] && vorhandenePlayer[0].player).map((c) => c.label);
+  if (gemischt) radarLabels[0] = "Technik & Taktik / Torwartspiel";
 
   profileCharts.compare = new Chart(radarCanvas.getContext("2d"), {
     type: "radar",
     data: {
-      labels: SCORE_CATEGORIES.map((c) => c.label),
+      labels: radarLabels,
       datasets: radarDatasets
     },
     options: {
@@ -1741,7 +1787,7 @@ function exportProfilePdf() {
 
   const head = ["Kriterium", ...compareEvals.map((e) => e.date)];
   const body = [];
-  SCORE_CATEGORIES.forEach((cat) => {
+  scoreCategoriesFor(player).forEach((cat) => {
     body.push([
       { content: cat.label, styles: { fontStyle: "bold", fillColor: [232, 240, 251] } },
       ...compareEvals.map(() => ({ content: "", styles: { fillColor: [232, 240, 251] } }))
@@ -1764,7 +1810,7 @@ function exportProfilePdf() {
   body.push([
     { content: `Gewichtet (${ageGroup ? AGE_GROUP_LABELS[ageGroup] : "ohne Altersstufe"})`, styles: { fontStyle: "bold", fillColor: [45, 140, 78], textColor: 255 } },
     ...compareEvals.map((e) => ({
-      content: `${Math.round(weightedPercent(e.scores, ageGroup))}%`,
+      content: `${Math.round(weightedPercent(e.scores, ageGroup, player))}%`,
       styles: { fontStyle: "bold", fillColor: [45, 140, 78], textColor: 255 }
     }))
   ]);
