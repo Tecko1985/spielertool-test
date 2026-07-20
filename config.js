@@ -2,6 +2,18 @@ const APP_VERSION = "1.0";
 
 const APP_CHANGELOG = [
   {
+    version: "1.3",
+    groups: [
+      {
+        title: "Speichern",
+        items: [
+          "Beim zügigen Bearbeiten – etwa mehrere Spielerzeilen direkt nacheinander ändern, Bewertungen kurz hintereinander speichern oder Altersgewichtungen und Förderschwellen einstellen – erschien wiederholt die Meldung, die Daten seien zwischenzeitlich auf einem anderen Gerät geändert worden, obwohl niemand sonst gearbeitet hat. Die zuletzt gemachte Eingabe ging dabei verloren, weil der Stand neu geladen wurde.",
+          "Ursache war, dass mehrere Speichervorgänge gleichzeitig unterwegs sein konnten. Jetzt wird immer nur ein Speichervorgang gleichzeitig ausgeführt; Änderungen, die währenddessen gemacht werden, werden gesammelt und unmittelbar danach mitgespeichert."
+        ]
+      }
+    ]
+  },
+  {
     version: "1.2",
     groups: [
       {
