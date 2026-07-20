@@ -2,46 +2,6 @@ const APP_VERSION = "1.0";
 
 const APP_CHANGELOG = [
   {
-    version: "1.3",
-    groups: [
-      {
-        title: "Speichern",
-        items: [
-          "Beim zügigen Bearbeiten – etwa mehrere Spielerzeilen direkt nacheinander ändern, Bewertungen kurz hintereinander speichern oder Altersgewichtungen und Förderschwellen einstellen – erschien wiederholt die Meldung, die Daten seien zwischenzeitlich auf einem anderen Gerät geändert worden, obwohl niemand sonst gearbeitet hat. Die zuletzt gemachte Eingabe ging dabei verloren, weil der Stand neu geladen wurde.",
-          "Ursache war, dass mehrere Speichervorgänge gleichzeitig unterwegs sein konnten. Jetzt wird immer nur ein Speichervorgang gleichzeitig ausgeführt; Änderungen, die währenddessen gemacht werden, werden gesammelt und unmittelbar danach mitgespeichert."
-        ]
-      }
-    ]
-  },
-  {
-    version: "1.2",
-    groups: [
-      {
-        title: "Eigene Bewertung für Torhüter",
-        items: [
-          "Bei Spielern mit dem Spielertyp Torhüter tritt im Bewertungsformular der Bereich Torwartspiel an die Stelle von Technik & Taktik — mit sieben eigenen Kriterien: Reflexe/Schusshalten, Stellungsspiel, Fangverhalten/Ballsicherheit, Eins-gegen-eins-Verhalten, Flanken/Hereingaben, Spielaufbau mit dem Fuß sowie Kommunikation & Organisation.",
-          "Zu jedem Torwart-Kriterium gibt es dieselbe Bewertungshilfe wie bei den Feldspielern (Beschreibung für 1, 5 und 10 Punkte).",
-          "Athletik, Mentale Stärke und Charakter & Sozial gelten unverändert für beide Spielertypen.",
-          "Altersgewichtung und Förderschwelle bleiben unverändert: das Torwartspiel zählt genauso viel wie Technik & Taktik, es muss nichts zusätzlich eingestellt werden.",
-          "Spielerprofil, Verlaufs- und Radar-Diagramme sowie der PDF-Export zeigen bei Torhütern automatisch die Torwart-Kriterien.",
-          "Beim Vergleich einer Bewertung wird nur noch derselbe Spielertyp zur Auswahl angeboten; im Spielervergleich weist ein Hinweis darauf hin, wenn Torhüter und Feldspieler gemeinsam dargestellt werden.",
-          "Wird ein Spieler nachträglich vom Feldspieler zum Torhüter umgestellt (oder umgekehrt), werden die Werte des alten Typs nicht mehr in neue Bewertungen übernommen und fließen nicht in den Gesamtscore ein."
-        ]
-      }
-    ]
-  },
-  {
-    version: "1.1",
-    groups: [
-      {
-        title: "Spielertyp",
-        items: [
-          "Neues Feld Spielertyp (Feldspieler/Torhüter) beim Anlegen eines Spielers und in der Spielerliste editierbar."
-        ]
-      }
-    ]
-  },
-  {
     version: "1.0",
     groups: [
       {
@@ -70,6 +30,19 @@ const APP_CHANGELOG = [
           "Anzeige der letzten Bewertung direkt im Bewertungs-Tab.",
           "Altersgerechte, frei editierbare Gewichtung der Bewertungsbereiche je Altersstufe.",
           "Frei einstellbare Förder-/Beobachtungsschwelle je Altersstufe."
+        ]
+      },
+      {
+        title: "Spielertyp & eigene Bewertung für Torhüter",
+        items: [
+          "Feld Spielertyp (Feldspieler/Torhüter) beim Anlegen eines Spielers und in der Spielerliste editierbar.",
+          "Bei Spielern mit dem Spielertyp Torhüter tritt im Bewertungsformular der Bereich Torwartspiel an die Stelle von Technik & Taktik — mit sieben eigenen Kriterien: Reflexe/Schusshalten, Stellungsspiel, Fangverhalten/Ballsicherheit, Eins-gegen-eins-Verhalten, Flanken/Hereingaben, Spielaufbau mit dem Fuß sowie Kommunikation & Organisation.",
+          "Zu jedem Torwart-Kriterium gibt es dieselbe Bewertungshilfe wie bei den Feldspielern (Beschreibung für 1, 5 und 10 Punkte).",
+          "Athletik, Mentale Stärke und Charakter & Sozial gelten unverändert für beide Spielertypen.",
+          "Altersgewichtung und Förderschwelle bleiben unverändert: das Torwartspiel zählt genauso viel wie Technik & Taktik, es muss nichts zusätzlich eingestellt werden.",
+          "Spielerprofil, Verlaufs- und Radar-Diagramme sowie der PDF-Export zeigen bei Torhütern automatisch die Torwart-Kriterien.",
+          "Beim Vergleich einer Bewertung wird nur noch derselbe Spielertyp zur Auswahl angeboten; im Spielervergleich weist ein Hinweis darauf hin, wenn Torhüter und Feldspieler gemeinsam dargestellt werden.",
+          "Wird ein Spieler nachträglich vom Feldspieler zum Torhüter umgestellt (oder umgekehrt), werden die Werte des alten Typs nicht mehr in neue Bewertungen übernommen und fließen nicht in den Gesamtscore ein."
         ]
       },
       {
