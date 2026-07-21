@@ -10,7 +10,7 @@
 <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jspdf-autotable@3.8.2/dist/jspdf.plugin.autotable.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-<link rel="stylesheet" href="style.css?v=1.0" />
+<link rel="stylesheet" href="style.css?v=1.1" />
 </head>
 <body>
 
@@ -75,8 +75,10 @@
     <button data-tab="evaluate">Bewertung</button>
     <button data-tab="profile">Spielerprofil &amp; Vergleich</button>
     <button data-tab="teams">Mannschaften und Gewichtung</button>
-    <button data-tab="info">Info</button>
-    <button data-tab="settings" style="margin-left:auto;">Einstellungen</button>
+    <div class="nav-right">
+      <button data-tab="settings">Einstellungen</button>
+      <button data-tab="info">Info</button>
+    </div>
   </nav>
 
   <main>

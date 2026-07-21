@@ -371,3 +371,8 @@ table tr:hover td { background: var(--gray); }
 
 .muted { color: var(--muted); font-size: 13px; }
 .empty-state { text-align: center; padding: 40px 20px; color: var(--muted); }
+
+/* Rechte Nav-Gruppe (Einstellungen/Verwaltung + Info). Das margin haengt
+   am Wrapper, damit die Gruppe rechts bleibt, auch wenn einzelne Buttons
+   fuer Nicht-Admins ausgeblendet sind. */
+nav .nav-right { margin-left: auto; display: flex; gap: inherit; }
