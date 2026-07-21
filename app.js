@@ -516,9 +516,9 @@ function setupNav() {
   });
 
   const versionBadgeHeader = document.getElementById("version-badge");
-  versionBadgeHeader.addEventListener("click", () => switchTab("settings"));
+  versionBadgeHeader.addEventListener("click", () => switchTab("info"));
   versionBadgeHeader.addEventListener("keydown", (e) => {
-    if (e.key === "Enter" || e.key === " ") { e.preventDefault(); switchTab("settings"); }
+    if (e.key === "Enter" || e.key === " ") { e.preventDefault(); switchTab("info"); }
   });
 }
 

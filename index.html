@@ -75,6 +75,7 @@
     <button data-tab="evaluate">Bewertung</button>
     <button data-tab="profile">Spielerprofil &amp; Vergleich</button>
     <button data-tab="teams">Mannschaften und Gewichtung</button>
+    <button data-tab="info">Info</button>
     <button data-tab="settings" style="margin-left:auto;">Einstellungen</button>
   </nav>
 
@@ -180,6 +181,18 @@
       </div>
     </section>
 
+    <!-- ---------- Info ---------- -->
+    <section class="tab-section" id="tab-info">
+      <div class="card">
+        <h2>Über das Spieler-Scouting <span class="version-badge" id="version-badge-2"></span></h2>
+        <p class="muted">Bewertung und Förderübersicht der Spieler je Mannschaft.</p>
+      </div>
+      <div class="card">
+        <h2>Änderungen</h2>
+        <div id="changelog-list"></div>
+      </div>
+    </section>
+
     <!-- Einstellungen -->
     <section class="tab-section" id="tab-settings">
       <div class="card">
@@ -234,10 +247,6 @@
           <button class="btn secondary small" id="btn-choose-backup-folder">Backup-Ordner wählen…</button>
           <button class="btn secondary small" id="btn-backup-now">Jetzt sichern</button>
         </div>
-      </div>
-      <div class="card">
-        <h3>Versionshistorie <span class="version-badge" id="version-badge-2"></span></h3>
-        <div id="changelog-list"></div>
       </div>
     </section>
 
@@ -423,6 +432,6 @@
 
 <script src="config.js?v=1.0"></script>
 <script src="db.js?v=1.0"></script>
-<script src="app.js?v=1.0"></script>
+<script src="app.js?v=1.1"></script>
 </body>
 </html>
