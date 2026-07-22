@@ -431,6 +431,7 @@ function setSaveStatus(text) {
 function persist() {
   setSaveStatus("Speichert…");
   clearTimeout(saveTimer);
+  ungespeicherteAenderungen = true;
   saveTimer = setTimeout(doPersist, 300);
 }
 
@@ -448,8 +449,17 @@ function persist() {
 // geschrieben, es geht also nichts verloren, wenn mehrere Änderungen zusammenfallen.
 let saveRunner = null;
 let saveDirty = false;
+// Fuer das Sicherheitsnetz beim Verlassen der Seite (beforeunload unter
+// runSaveLoop): "es liegt etwas an" und "der letzte Versuch ging schief".
+// Beides wird eigens gepflegt statt aus saveDirty/saveRunner abgeleitet -- der
+// Debounce-Timer laeuft schon, bevor saveDirty ueberhaupt gesetzt ist, und
+// genau dieses Fenster ist der Fall, den das Netz auffangen soll.
+let ungespeicherteAenderungen = false;
+let letzterSaveFehlgeschlagen = false;
+
 function doPersist() {
   saveDirty = true;
+  ungespeicherteAenderungen = true;
   if (!saveRunner) saveRunner = runSaveLoop().finally(() => { saveRunner = null; });
   return saveRunner;
 }
@@ -463,8 +473,32 @@ async function runSaveLoop() {
     // wieder überbügeln.
     if (!ok) { saveDirty = false; break; }
   }
+  // Nach einem sauberen Durchlauf ist alles draussen, sonst liegt noch etwas an.
+  ungespeicherteAenderungen = !ok;
+  letzterSaveFehlgeschlagen = !ok;
   return ok;
 }
+
+// Sicherheitsnetz beim Verlassen der Seite: ein noch nicht abgelaufener
+// Debounce-Timer und ein gerade laufender fetch gehen beim Entladen beide
+// verloren -- der Browser bricht laufende Requests ab. Der keepalive-Request
+// ueberlebt das Schliessen des Tabs.
+//
+// Nachgefragt wird NUR, wenn dieser Weg nicht traegt (Daten ueber der
+// 64-KB-Grenze, kein Token, oder der letzte regulaere Versuch schlug schon
+// fehl). Sonst kaeme die Rueckfrage bei JEDEM Schliessen kurz nach einer
+// Aenderung -- also staendig -- und wuerde reflexhaft weggeklickt, gerade dann
+// wenn sie einmal wirklich zaehlt.
+window.addEventListener("beforeunload", (e) => {
+  if (!ungespeicherteAenderungen) return;
+  // Apps mit zusaetzlichem lokalem Datei-Modus duerfen hier nichts ins Gateway
+  // schicken: dort ist die lokale Datei die Wahrheit, nicht Nextcloud.
+  if (typeof storageMode !== "undefined" && storageMode !== "gateway") return;
+  const abgeschickt = gatewaySaveBeacon(appData);
+  if (abgeschickt && !letzterSaveFehlgeschlagen) return;
+  e.preventDefault();
+  e.returnValue = "";
+});
 // Schreibt beide Speicherwege (Gateway UND lokale Datei); true = geschrieben bzw.
 // nichts zu tun, false = Konflikt/Fehler.
 async function writeOnce() {
@@ -1626,7 +1660,48 @@ function renderEvalDetailHtml(ev, player) {
   }).join("");
 }
 
-function renderProfileCharts(evals, player) {
+// Chart.js (204 KB), jsPDF + autoTable (394 KB) und SheetJS (861 KB) standen
+// fest im <head> und hielten damit JEDEN Seitenaufruf auf -- zusammen rund
+// 1,5 MB, obwohl sie nur in einzelnen Ansichten gebraucht werden. Sie werden
+// jetzt beim ersten Bedarf nachgeladen; jeder weitere Aufruf bekommt dieselbe
+// Promise, ein Fehlschlag wird vergessen, damit ein zweiter Versuch moeglich ist.
+const bibliotheken = new Map();
+function ladeBibliothek(url) {
+  if (bibliotheken.has(url)) return bibliotheken.get(url);
+  const p = new Promise((resolve, reject) => {
+    const s = document.createElement("script");
+    s.src = url;
+    s.onload = () => resolve();
+    s.onerror = () => {
+      bibliotheken.delete(url);
+      reject(new Error("Bibliothek konnte nicht geladen werden: " + url));
+    };
+    document.head.appendChild(s);
+  });
+  bibliotheken.set(url, p);
+  return p;
+}
+function ladeCharts() {
+  return ladeBibliothek("https://cdn.jsdelivr.net/npm/chart.js");
+}
+// autoTable haengt sich an jsPDF an und braucht es deshalb VOR sich -- die
+// beiden nacheinander laden, nicht parallel. Im <head> war die Reihenfolge
+// vorher durch die Zeilenfolge garantiert.
+async function ladePdfBibliotheken() {
+  await ladeBibliothek("https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js");
+  await ladeBibliothek("https://cdn.jsdelivr.net/npm/jspdf-autotable@3.8.2/dist/jspdf.plugin.autotable.min.js");
+}
+function ladeXlsx() {
+  return ladeBibliothek("https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js");
+}
+
+async function renderProfileCharts(evals, player) {
+  try {
+    await ladeCharts();
+  } catch (e) {
+    console.error(e);
+    return; // ohne Diagramm-Bibliothek bleiben die Canvas leer, der Rest des Profils steht
+  }
   const cats = scoreCategoriesFor(player);
   const lineCtx = document.getElementById("profile-line-chart").getContext("2d");
   const radarCtx = document.getElementById("profile-radar-chart").getContext("2d");
@@ -1707,7 +1782,13 @@ function setupProfileForm() {
   });
 }
 
-function renderPlayerComparison() {
+async function renderPlayerComparison() {
+  try {
+    await ladeCharts();
+  } catch (e) {
+    console.error(e);
+    return;
+  }
   const radarCanvas = document.getElementById("compare-radar-chart");
   const emptyEl = document.getElementById("compare-empty");
   const tableEl = document.getElementById("compare-table");
@@ -1788,7 +1869,13 @@ function renderPlayerComparison() {
   });
 }
 
-function exportProfilePdf() {
+async function exportProfilePdf() {
+  try {
+    await ladePdfBibliotheken();
+  } catch (e) {
+    alert("PDF-Bibliothek konnte nicht geladen werden (keine Internetverbindung?).");
+    return;
+  }
   const playerId = document.getElementById("profile-player-select").value;
   const player = appData.players.find((p) => p.id === playerId);
   if (!player) {
@@ -2012,6 +2099,8 @@ function setupExcelImport() {
     const statusEl = document.getElementById("settings-excel-import-status");
     if (!file) return;
     try {
+      if (statusEl) statusEl.textContent = "Excel-Datei wird gelesen…";
+      await ladeXlsx();
       const buffer = await file.arrayBuffer();
       const workbook = XLSX.read(buffer, { type: "array", cellDates: true });
       const sheet = workbook.Sheets[workbook.SheetNames[0]];
