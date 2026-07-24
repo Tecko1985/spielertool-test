@@ -5,6 +5,19 @@ let currentUser = null; // {username, isAdmin, groupIds, vorname, nachname, canE
 // wer die Datei lokal geöffnet hat, darf sie wie bisher komplett bearbeiten. Nur im
 // Gateway-Modus entscheidet das server-seitige Bearbeiten-Recht (editGroupIds).
 function canEdit() { return storageMode !== "gateway" || !!(currentUser && (currentUser.isAdmin || currentUser.canEdit)); }
+// Dritte Stufe "Administrieren" (Tools-Übersicht, seit 2026-07-24): JSON-/Excel-
+// Import und das automatische Backup sind strukturelle Eingriffe und hängen an
+// dieser Stufe. Im lokalen Datei-Modus (kein Gateway) keine Einschränkung.
+function canAdmin() { return storageMode !== "gateway" || !!(currentUser && (currentUser.isAdmin || currentUser.canAdmin)); }
+// Blendet die rechte-abhängigen Elemente ein/aus: .editor-only ab Bearbeiten
+// (JSON-Export), .admin-only ab Administrieren. Läuft in startApp() für beide
+// Speicher-Modi — die Elemente starten im HTML mit .hidden (fail-closed).
+function applyRechteVisibility() {
+  const editable = canEdit();
+  const admin = canAdmin();
+  document.querySelectorAll(".editor-only").forEach((el) => el.classList.toggle("hidden", !editable));
+  document.querySelectorAll(".admin-only").forEach((el) => el.classList.toggle("hidden", !admin));
+}
 let fileHandle = null;
 let pendingHandle = null;
 let backupDirHandle = null;
@@ -407,6 +420,7 @@ async function loadAndStart() {
 function startApp() {
   document.getElementById("connect-screen").style.display = "none";
   document.getElementById("app-shell").style.display = "block";
+  applyRechteVisibility();
   const status = document.getElementById("file-status");
   status.classList.add("connected");
   const fileLabel = storageMode === "gateway" ? "Nextcloud (über Anmeldung)" : fileHandle ? fileHandle.name : "Datei";
@@ -1985,6 +1999,7 @@ function setupBackupButtons() {
   });
 
   document.getElementById("import-file-input").addEventListener("change", async (e) => {
+    if (!canAdmin()) return;
     const file = e.target.files[0];
     if (!file) return;
     try {
@@ -2095,6 +2110,7 @@ function setupExcelImport() {
   });
 
   document.getElementById("import-excel-input").addEventListener("change", async (e) => {
+    if (!canAdmin()) return;
     const file = e.target.files[0];
     const statusEl = document.getElementById("settings-excel-import-status");
     if (!file) return;
@@ -2126,6 +2142,7 @@ function setupExcelImport() {
 
 function setupBackupFolder() {
   document.getElementById("btn-choose-backup-folder").addEventListener("click", async () => {
+    if (!canAdmin()) return;
     try {
       const dir = await window.showDirectoryPicker();
       if (!(await verifyPermission(dir, true))) {
@@ -2142,6 +2159,7 @@ function setupBackupFolder() {
   });
 
   document.getElementById("btn-backup-now").addEventListener("click", async () => {
+    if (!canAdmin()) return;
     if (!backupDirHandle) {
       alert("Bitte zuerst einen Backup-Ordner wählen.");
       return;

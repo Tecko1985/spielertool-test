@@ -58,7 +58,8 @@ const APP_CHANGELOG = [
         items: [
           "Spieler-Import aus Excel-Dateien (Vorname/Nachname/Position/Geburtsdatum, mit oder ohne Kopfzeile).",
           "Speicherort: automatisch Nextcloud über die zentrale Anmeldung, alternativ (ohne Anmeldung) eine lokale Datei per Datei-Picker mit dauerhaft gemerkter Zugriffsberechtigung.",
-          "Automatisches, datiertes Backup bei jedem App-Start."
+          "Automatisches, datiertes Backup bei jedem App-Start.",
+          "Rechte-Stufen im Nextcloud-Modus: JSON-Export und Profil-PDF-Export stehen ab „Bearbeiten“ zur Verfügung; JSON-/Excel-Import und das automatische Backup sind der Stufe „Administrieren“ vorbehalten (Häkchen im Sichtbarkeits-Panel der Tools-Übersicht). Im lokalen Datei-Modus gibt es keine Einschränkung."
         ]
       },
       {
