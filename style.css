@@ -380,3 +380,17 @@ table tr:hover td { background: var(--gray); }
    am Wrapper, damit die Gruppe rechts bleibt, auch wenn einzelne Buttons
    fuer Nicht-Admins ausgeblendet sind. */
 nav .nav-right { margin-left: auto; display: flex; gap: inherit; }
+
+/* Nur-Seher (kein Bearbeiten-Recht): Bearbeiten-Container ausgrauen + sperren --
+   "Sehen = wirklich nur sehen" (2026-07-24, Spec klare-rechte-trennung). Trifft nur
+   Eingabe-/Aktions-Elemente in .edit-zone; Werte/Labels bleiben lesbar, und
+   Suche/Filter/Sortierung liegen ausserhalb der .edit-zone und bleiben aktiv. */
+body.is-viewonly .edit-zone input,
+body.is-viewonly .edit-zone select,
+body.is-viewonly .edit-zone textarea {
+  pointer-events: none;
+  background: #eef0f2;
+  color: #6b7280;
+  cursor: default;
+}
+body.is-viewonly .edit-zone button { pointer-events: none; opacity: 0.45; }

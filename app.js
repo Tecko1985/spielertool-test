@@ -17,6 +17,16 @@ function applyRechteVisibility() {
   const admin = canAdmin();
   document.querySelectorAll(".editor-only").forEach((el) => el.classList.toggle("hidden", !editable));
   document.querySelectorAll(".admin-only").forEach((el) => el.classList.toggle("hidden", !admin));
+  // Nur-Seher: Bearbeiten-Container (Formulare + inline editierbare Spieler-/Mannschafts-
+  // listen + Gewichtungen/Schwellen) per CSS ausgrauen/sperren -- "Sehen = wirklich nur
+  // sehen" (2026-07-24, Spec klare-rechte-trennung). Suche/Filter/Sortierung liegen
+  // ausserhalb dieser Container und bleiben aktiv.
+  ["player-form", "team-form", "evaluate-form", "players-list", "teams-list",
+   "age-weights-list", "age-thresholds-list"].forEach((id) => {
+    const el = document.getElementById(id);
+    if (el) el.classList.add("edit-zone");
+  });
+  document.body.classList.toggle("is-viewonly", !editable);
 }
 let fileHandle = null;
 let pendingHandle = null;

@@ -66,7 +66,8 @@ const APP_CHANGELOG = [
         title: "Sonstiges",
         items: [
           "App ist installierbar (PWA) für app-ähnliche Nutzung ohne Browser-Adressleiste.",
-          "Einstellungsbereich mit Autosave-/Autoload-Status und Versionsinfo; Feedback und Änderungswünsche werden zentral über die Tools-Übersicht (Tab „Feedback & Hilfe“) eingereicht."
+          "Einstellungsbereich mit Autosave-/Autoload-Status und Versionsinfo; Feedback und Änderungswünsche werden zentral über die Tools-Übersicht (Tab „Feedback & Hilfe“) eingereicht.",
+          "Nur-Seher (ohne Bearbeiten-Recht) bekommen die Bearbeiten-Bereiche jetzt ausgegraut und gesperrt: Spieler anlegen/bearbeiten, Bewertung erfassen, Mannschaften und Gewichtungen. Suche, Filter und Sortierung bleiben normal nutzbar. Vorher wirkten die Felder editierbar, obwohl das Speichern ohnehin abgelehnt wurde."
         ]
       }
     ]
