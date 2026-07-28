@@ -78,6 +78,7 @@ nav {
   background: var(--white);
   padding: 8px 28px 0;
   border-bottom: 1px solid var(--border);
+  flex-wrap: wrap;
 }
 nav button {
   background: none;
@@ -394,3 +395,17 @@ body.is-viewonly .edit-zone textarea {
   cursor: default;
 }
 body.is-viewonly .edit-zone button { pointer-events: none; opacity: 0.45; }
+
+/* Breite Datentabellen scrollen auf schmalen Schirmen in sich, statt die
+   ganze Seite seitlich zu schieben. Gleiche Klasse wie in Personalkosten. */
+.table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+
+/* ---------- Handy: Formularfelder mindestens 16px ----------
+   iOS Safari zoomt beim Antippen eines Feldes unter 16px automatisch in die
+   Seite hinein — und wieder heraus zoomt es nicht. Die Feldregeln weiter oben
+   laufen über Klassen und sind damit höher spezifisch als ein reiner
+   Elementsatz, deshalb hier !important. Gilt nur auf schmalen Schirmen, das
+   Desktop-Design bleibt unverändert. */
+@media (max-width: 820px) {
+  input, select, textarea { font-size: 16px !important; }
+}
