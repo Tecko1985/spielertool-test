@@ -2,85 +2,76 @@ const APP_VERSION = "1.0";
 
 const APP_CHANGELOG = [
   {
-    version: "1.1",
-    groups: [
-      {
-        title: "Bedienung am Handy",
-        items: [
-          "Die Tab-Leiste bricht am Handy jetzt um, statt seitlich aus dem Bild zu laufen. Vorher waren die hinteren Tabs auf schmalen Bildschirmen nicht erreichbar.",
-          "Eingabefelder sind am Handy mindestens 16 Pixel groß. Dadurch zoomt der iPhone-Browser beim Antippen eines Feldes nicht mehr ungefragt in die Seite hinein und bleibt danach verschoben stehen.",
-          "Breite Tabellen lassen sich am Handy seitlich scrollen, statt die ganze Seite mitzuschieben."
-        ]
-      }
-    ]
-  },
-  {
     version: "1.0",
     groups: [
       {
-        title: "Anmeldung statt Zugangsdaten",
-        items: [
-          "Die Nextcloud-Synchronisierung läuft über die zentrale Anmeldung in der Tools-Übersicht: einmal dort anmelden, danach werden die Spielerdaten automatisch geladen und gespeichert – auch am Handy, unabhängig davon ob vorher der lokale Datei-Modus genutzt wurde.",
-          "Das frühere Verbindungsformular mit WebDAV-Adresse, Benutzername und App-Passwort entfällt komplett; es muss kein Passwort mehr auf dem Gerät eingegeben oder gespeichert werden.",
-          "Nur wer das Tool in der Übersicht sehen darf, kann die Spielerdaten öffnen (die Gruppen-Rechte werden serverseitig geprüft).",
-          "Konfliktschutz beim Speichern: Bearbeiten zwei Geräte gleichzeitig, wird der Konflikt erkannt und der aktuelle Stand neu geladen, statt dass Änderungen stillschweigend verloren gehen."
-        ]
-      },
-      {
         title: "Spieler & Mannschaften",
         items: [
-          "Spieler anlegen, inline bearbeiten und suchen (Vor-/Nachname, Position, Geburtsdatum).",
-          "Automatische Mannschaftszuordnung anhand des Geburtsdatums.",
-          "Mannschaftsverwaltung mit Altersstufen-Filter, der über alle Tabs hinweg wirkt."
+          "Spieler anlegen, direkt in der Liste bearbeiten und suchen — nach Vor- und Nachname, Position und Geburtsdatum.",
+          "Die Mannschaft ergibt sich automatisch aus dem Geburtsdatum.",
+          "Mannschaftsverwaltung mit Altersstufen-Filter, der über alle Reiter hinweg wirkt.",
+          "Feld „Spielertyp“ (Feldspieler oder Torhüter), beim Anlegen und später in der Liste änderbar."
         ]
       },
       {
         title: "Bewertung",
         items: [
-          "Bewertung je Spieler in den Bereichen Technik & Taktik, Athletik, Mentale Stärke sowie Charakter & Sozial.",
-          "Das Bewerter-Feld wird bei einer neuen Bewertung automatisch mit dem eingeloggten Nutzer vorbelegt (bleibt änderbar) — so ist bei jeder Bewertung nachvollziehbar, wer sie erfasst hat.",
-          "Rubrik-Texte je Kriterium und Punktstufe als Orientierung.",
-          "Anzeige der letzten Bewertung direkt im Bewertungs-Tab.",
-          "Altersgerechte, frei editierbare Gewichtung der Bewertungsbereiche je Altersstufe.",
-          "Frei einstellbare Förder-/Beobachtungsschwelle je Altersstufe."
+          "Bewertung je Spieler in vier Bereichen: Technik & Taktik, Athletik, Mentale Stärke sowie Charakter & Sozial.",
+          "Zu jedem Kriterium gibt es eine Bewertungshilfe mit Beschreibungen für 1, 5 und 10 Punkte.",
+          "Das Bewerter-Feld ist mit dem angemeldeten Nutzer vorbelegt und bleibt änderbar — so ist nachvollziehbar, wer eine Bewertung erfasst hat.",
+          "Die letzte Bewertung steht direkt im Bewertungs-Reiter.",
+          "Die Gewichtung der vier Bereiche lässt sich je Altersstufe frei einstellen, ebenso die Förder- und Beobachtungsschwelle."
         ]
       },
       {
-        title: "Spielertyp & eigene Bewertung für Torhüter",
+        title: "Eigene Bewertung für Torhüter",
         items: [
-          "Feld Spielertyp (Feldspieler/Torhüter) beim Anlegen eines Spielers und in der Spielerliste editierbar.",
-          "Bei Spielern mit dem Spielertyp Torhüter tritt im Bewertungsformular der Bereich Torwartspiel an die Stelle von Technik & Taktik — mit sieben eigenen Kriterien: Reflexe/Schusshalten, Stellungsspiel, Fangverhalten/Ballsicherheit, Eins-gegen-eins-Verhalten, Flanken/Hereingaben, Spielaufbau mit dem Fuß sowie Kommunikation & Organisation.",
-          "Zu jedem Torwart-Kriterium gibt es dieselbe Bewertungshilfe wie bei den Feldspielern (Beschreibung für 1, 5 und 10 Punkte).",
+          "Bei einem Torhüter tritt der Bereich „Torwartspiel“ an die Stelle von Technik & Taktik — mit sieben eigenen Kriterien: Reflexe und Schusshalten, Stellungsspiel, Fangverhalten und Ballsicherheit, Eins-gegen-eins, Flanken, Spielaufbau mit dem Fuß sowie Kommunikation und Organisation.",
+          "Auch dazu gibt es die Bewertungshilfe für 1, 5 und 10 Punkte.",
           "Athletik, Mentale Stärke und Charakter & Sozial gelten unverändert für beide Spielertypen.",
-          "Altersgewichtung und Förderschwelle bleiben unverändert: das Torwartspiel zählt genauso viel wie Technik & Taktik, es muss nichts zusätzlich eingestellt werden.",
-          "Spielerprofil, Verlaufs- und Radar-Diagramme sowie der PDF-Export zeigen bei Torhütern automatisch die Torwart-Kriterien.",
-          "Beim Vergleich einer Bewertung wird nur noch derselbe Spielertyp zur Auswahl angeboten; im Spielervergleich weist ein Hinweis darauf hin, wenn Torhüter und Feldspieler gemeinsam dargestellt werden.",
-          "Wird ein Spieler nachträglich vom Feldspieler zum Torhüter umgestellt (oder umgekehrt), werden die Werte des alten Typs nicht mehr in neue Bewertungen übernommen und fließen nicht in den Gesamtscore ein."
+          "Gewichtung und Förderschwelle bleiben gleich: das Torwartspiel zählt genauso viel wie Technik & Taktik, es muss nichts umgestellt werden.",
+          "Spielerprofil, Verlaufs- und Radar-Diagramme sowie der PDF-Export zeigen bei Torhütern von selbst die Torwart-Kriterien.",
+          "Beim Vergleich wird nur derselbe Spielertyp angeboten. Stehen im Spielervergleich Torhüter und Feldspieler nebeneinander, weist ein Hinweis darauf hin.",
+          "Wird ein Spieler nachträglich umgestellt, fließen die Werte des alten Typs nicht mehr in neue Bewertungen und nicht in den Gesamtwert ein."
         ]
       },
       {
-        title: "Dashboard & Profil",
+        title: "Übersicht & Profil",
         items: [
-          "Dashboard-Filter nach Alter der letzten Bewertung (3/6/9/12 Monate).",
-          "Markierung von Spielern über der Förderschwelle, mit Sprung direkt zur Bewertung.",
-          "Spielerprofil mit Verlaufs-Charts (Linie, Radar, Vergleich) über alle Bewertungszeitpunkte."
+          "Übersicht mit Filter danach, wie alt die letzte Bewertung ist — 3, 6, 9 oder 12 Monate.",
+          "Spieler über der Förderschwelle sind markiert, ein Klick führt direkt zur Bewertung.",
+          "Spielerprofil mit Verlaufsdiagrammen über alle Bewertungszeitpunkte: Linie, Radar und Vergleich."
+        ]
+      },
+      {
+        title: "Wer darf was",
+        items: [
+          "Sehen: Spielerliste, Bewertungen, Profile und Diagramme. Die Bearbeiten-Bereiche sind ausgegraut und gesperrt — Spieler anlegen und bearbeiten, Bewertung erfassen, Mannschaften und Gewichtungen. Suche, Filter und Sortierung bleiben nutzbar.",
+          "Bearbeiten: Spieler und Bewertungen pflegen, Gewichtungen und Schwellen einstellen. Dazu der JSON-Export und das Profil als PDF.",
+          "Administrieren: zusätzlich JSON- und Excel-Import sowie das automatische Backup.",
+          "Im lokalen Datei-Modus ohne Anmeldung gelten diese Stufen nicht.",
+          "Der Reiter „Info“ ist für alle sichtbar."
+        ]
+      },
+      {
+        title: "Bedienung am Handy",
+        items: [
+          "Die Reiterleiste bricht am Handy um, statt seitlich aus dem Bild zu laufen — auch die hinteren Reiter sind auf schmalen Bildschirmen erreichbar.",
+          "Eingabefelder sind mindestens 16 Pixel groß, damit der iPhone-Browser beim Antippen nicht ungefragt in die Seite hineinzoomt und verschoben stehen bleibt.",
+          "Breite Tabellen lassen sich seitlich scrollen, ohne dass die ganze Seite mitwandert.",
+          "Die App lässt sich als Anwendung auf dem Startbildschirm ablegen und läuft dann ohne Browser-Adressleiste."
         ]
       },
       {
         title: "Daten & Speicherung",
         items: [
-          "Spieler-Import aus Excel-Dateien (Vorname/Nachname/Position/Geburtsdatum, mit oder ohne Kopfzeile).",
-          "Speicherort: automatisch Nextcloud über die zentrale Anmeldung, alternativ (ohne Anmeldung) eine lokale Datei per Datei-Picker mit dauerhaft gemerkter Zugriffsberechtigung.",
-          "Automatisches, datiertes Backup bei jedem App-Start.",
-          "Rechte-Stufen im Nextcloud-Modus: JSON-Export und Profil-PDF-Export stehen ab „Bearbeiten“ zur Verfügung; JSON-/Excel-Import und das automatische Backup sind der Stufe „Administrieren“ vorbehalten (Häkchen im Sichtbarkeits-Panel der Tools-Übersicht). Im lokalen Datei-Modus gibt es keine Einschränkung."
-        ]
-      },
-      {
-        title: "Sonstiges",
-        items: [
-          "App ist installierbar (PWA) für app-ähnliche Nutzung ohne Browser-Adressleiste.",
-          "Einstellungsbereich mit Autosave-/Autoload-Status und Versionsinfo; Feedback und Änderungswünsche werden zentral über die Tools-Übersicht (Tab „Feedback & Hilfe“) eingereicht.",
-          "Nur-Seher (ohne Bearbeiten-Recht) bekommen die Bearbeiten-Bereiche jetzt ausgegraut und gesperrt: Spieler anlegen/bearbeiten, Bewertung erfassen, Mannschaften und Gewichtungen. Suche, Filter und Sortierung bleiben normal nutzbar. Vorher wirkten die Felder editierbar, obwohl das Speichern ohnehin abgelehnt wurde."
+          "Gespeichert wird in der Vereins-Nextcloud über die zentrale Anmeldung der Tools-Übersicht — ein eigenes Passwort braucht es nicht, auch nicht am Handy.",
+          "Wer das Werkzeug in der Übersicht sehen darf, kann die Spielerdaten öffnen; geprüft wird das auf dem Server.",
+          "Alternativ und ohne Anmeldung: eine lokale Datei über den Dateiauswähler, deren Zugriffsrecht sich der Browser dauerhaft merkt.",
+          "Spieler-Import aus Excel-Dateien mit Vorname, Nachname, Position und Geburtsdatum — mit oder ohne Kopfzeile.",
+          "Bei jedem Start legt die App ein datiertes Backup an.",
+          "Ändern zwei Geräte gleichzeitig denselben Stand, erkennt die App das, lädt den fremden Stand nach und sagt Bescheid.",
+          "Rückmeldungen und Änderungswünsche laufen zentral über die Tools-Übersicht."
         ]
       }
     ]
