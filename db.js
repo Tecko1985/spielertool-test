@@ -89,7 +89,7 @@ function fsApiSupported() {
 
 // ---------- Zentrales Login-Gateway (Tools-Übersicht) ----------
 // Statt WebDAV-Zugangsdaten pro Gerät: das Login-Token der Tools-Übersicht
-// (gleiche Origin tecko1985.github.io) wird wiederverwendet. Der landingpage-
+// (gleiche Origin sc1911heiligenstadt.github.io) wird wiederverwendet. Der landingpage-
 // Worker prüft das Token + die Tool-Sichtbarkeit und greift serverseitig mit
 // den Vereins-Zugangsdaten auf Nextcloud zu — hier liegt kein Passwort mehr.
 const GATEWAY_URL = "https://landingpage.michel-brunner.workers.dev";

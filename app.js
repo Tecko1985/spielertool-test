@@ -270,7 +270,7 @@ async function init() {
   // Cloud-Sync über die zentrale Anmeldung (Tools-Übersicht): sobald ein
   // Login-Token vorliegt, wird es genutzt — unabhängig von einem früher
   // gespeicherten lokalen Datei-Modus. Das Token liegt in derselben Origin
-  // (tecko1985.github.io) und wird wiederverwendet. Nur ohne gültiges Login
+  // (sc1911heiligenstadt.github.io) und wird wiederverwendet. Nur ohne gültiges Login
   // greift unten der lokale Datei-Modus.
   if (getSessionToken()) {
     try {

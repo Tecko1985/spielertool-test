@@ -15,7 +15,7 @@ Web-App zur Bewertung und Förderung von Nachwuchsspielern im Vereinsbetrieb. L�
 
 Die Spielerdaten liegen in einer JSON-Datei, die auf zwei Wegen verbunden werden kann:
 
-- **Automatische Nextcloud-Synchronisierung über die zentrale Anmeldung** (auch am Handy) — einmal in der [Tools-Übersicht](https://tecko1985.github.io/ToolsUebersicht/) anmelden, danach werden die Spielerdaten automatisch über einen zentralen Cloudflare Worker geladen und gespeichert. Kein WebDAV-Passwort mehr auf dem Gerät nötig; die Zugriffsrechte werden serverseitig anhand der Gruppen-Sichtbarkeit geprüft.
+- **Automatische Nextcloud-Synchronisierung über die zentrale Anmeldung** (auch am Handy) — einmal in der [Tools-Übersicht](https://sc1911heiligenstadt.github.io/ToolsUebersicht/) anmelden, danach werden die Spielerdaten automatisch über einen zentralen Cloudflare Worker geladen und gespeichert. Kein WebDAV-Passwort mehr auf dem Gerät nötig; die Zugriffsrechte werden serverseitig anhand der Gruppen-Sichtbarkeit geprüft.
 - **Lokale Datei** über die File-System-API (z.B. am Desktop ohne Login; Browser merkt sich die Zugriffsberechtigung).
 
 ## Tech-Stack
