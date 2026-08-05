@@ -1701,7 +1701,11 @@ function ladeBibliothek(url) {
   return p;
 }
 function ladeCharts() {
-  return ladeBibliothek("https://cdn.jsdelivr.net/npm/chart.js");
+  // Version fest angepinnt (wie jspdf, xlsx und alle uebrigen CDN-Libs der Flotte).
+  // Ohne Pin liefert jsdelivr immer die neueste Fassung -- ein Major-Sprung von
+  // Chart.js braeche die Diagramme dann lautlos, ohne dass hier etwas geaendert
+  // wurde. 4.5.1 ist die Fassung, die am 2026-08-05 ohnehin ausgeliefert wurde.
+  return ladeBibliothek("https://cdn.jsdelivr.net/npm/chart.js@4.5.1");
 }
 // autoTable haengt sich an jsPDF an und braucht es deshalb VOR sich -- die
 // beiden nacheinander laden, nicht parallel. Im <head> war die Reihenfolge
