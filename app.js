@@ -154,11 +154,6 @@ function getAgeGroupForPlayer(p) {
   return getAgeGroupForAge(calculateAge(p.birthdate));
 }
 
-function getAgeGroupForTeam(team) {
-  if (!team) return null;
-  return getAgeGroupForAge(calculateAge(team.birthdateFrom || team.birthdateTo));
-}
-
 function weightedPercent(scores, ageGroup, player) {
   const weights = ageGroup && appData.ageGroupWeights ? appData.ageGroupWeights[ageGroup] : null;
   if (!weights) return totalScore(scores) / TOTAL_MAX_SCORE * 100;
@@ -174,15 +169,6 @@ function formatDateDe(dateStr) {
   const d = new Date(dateStr + "T00:00:00");
   if (isNaN(d.getTime())) return dateStr;
   return d.toLocaleDateString("de-DE");
-}
-
-function formatBirthdateRange(t) {
-  const hasFrom = !!t.birthdateFrom;
-  const hasTo = !!t.birthdateTo;
-  if (!hasFrom && !hasTo) return "";
-  if (hasFrom && hasTo) return `${formatDateDe(t.birthdateFrom)} – ${formatDateDe(t.birthdateTo)}`;
-  if (hasFrom) return `ab ${formatDateDe(t.birthdateFrom)}`;
-  return `bis ${formatDateDe(t.birthdateTo)}`;
 }
 
 function findTeamForBirthdate(birthdate) {
@@ -219,17 +205,6 @@ function autoAssignAllPlayers() {
   });
   if (changed) persist();
   return changed;
-}
-
-function resolveTeamByName(name) {
-  const trimmed = (name || "").trim();
-  if (!trimmed) return null;
-  let t = appData.teams.find((x) => x.name.toLowerCase() === trimmed.toLowerCase());
-  if (!t) {
-    t = { id: uuid(), name: trimmed };
-    appData.teams.push(t);
-  }
-  return t;
 }
 
 function uuid() {
