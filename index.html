@@ -128,7 +128,13 @@
         <h2>Neue Mannschaft anlegen</h2>
         <form id="team-form">
           <div class="form-grid">
-            <div class="form-field"><label>Name *</label><input type="text" id="team-name" placeholder="z.B. U16" required /></div>
+            <!-- datalist: die Mannschaften des Vereins zur Auswahl, aber ein
+                 eigener Name bleibt tippbar (bewusst kein <select>). -->
+            <div class="form-field">
+              <label>Name *</label>
+              <input type="text" id="team-name" list="vereins-mannschaften" placeholder="z. B. B1 — oder eigener Name" autocomplete="off" required />
+              <datalist id="vereins-mannschaften"></datalist>
+            </div>
             <div class="form-field"><label>Geburtsdatum von</label><input type="date" id="team-birthdate-from" /></div>
             <div class="form-field"><label>Geburtsdatum bis</label><input type="date" id="team-birthdate-to" /></div>
           </div>
@@ -460,8 +466,8 @@
   </main>
 </div>
 
-<script src="config.js?v=1.4"></script>
-<script src="db.js?v=1.2"></script>
-<script src="app.js?v=1.8"></script>
+<script src="config.js?v=1.5"></script>
+<script src="db.js?v=1.3"></script>
+<script src="app.js?v=1.9"></script>
 </body>
 </html>

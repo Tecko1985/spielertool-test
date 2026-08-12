@@ -2,6 +2,20 @@ const APP_VERSION = "1.0";
 
 const APP_CHANGELOG = [
   {
+    version: "1.1",
+    groups: [
+      {
+        title: "Mannschaften aus der Vereinsliste",
+        items: [
+          "Beim Anlegen einer Mannschaft schlägt das Namensfeld die echten Mannschaften des Vereins vor — die Liste, die in der Tools-Übersicht unter Einstellungen → Mannschaften gepflegt wird.",
+          "Einen eigenen Namen tippen geht weiter, etwa für eine Sichtungsgruppe.",
+          "Aufgelöste Mannschaften werden nicht vorgeschlagen.",
+          "Geburtsjahrgang und Gewichtungen bestehender Mannschaften bleiben unverändert."
+        ]
+      }
+    ]
+  },
+  {
     version: "1.0",
     groups: [
       {

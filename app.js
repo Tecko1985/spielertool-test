@@ -258,6 +258,12 @@ async function init() {
       await FileStore.setStorageMode("gateway");
       await FileStore.clearWebdavConfig(); // alte, im Klartext gespeicherte Zugangsdaten aufräumen
       startApp();
+      // Kommt nach dem Start: die Liste füllt nur ein Auswahlfeld, die App ist
+      // ohne sie vollständig bedienbar.
+      fetchVereinsMannschaften().then((liste) => {
+        vereinsMannschaften = liste;
+        renderVereinsListe();
+      });
       return;
     } catch (e) {
       if (!(e instanceof NotLoggedInError)) {
@@ -683,6 +689,26 @@ function setupPlayersExtraFilters() {
     playersSearchQuery = e.target.value.trim().toLowerCase();
     renderPlayers();
   });
+}
+
+// ---------- Mannschaften aus der zentralen Vereinsliste (seit 2026-08-12) ----------
+//
+// Das Spielertool führt seine Mannschaften weiterhin selbst — an ihnen hängen
+// Geburtsjahrgang, Altersgewichtungen und die automatische Spielerzuordnung.
+// Die Vereinsliste ist ein VORSCHLAG: sie füllt die Auswahl beim Anlegen, ein
+// eigener Name bleibt jederzeit möglich.
+//
+// ⚠️ Bewusst NUR die Auswahlliste, KEIN Knopf zum Sammel-Übernehmen. Im Busplan
+// gab es einen, und Michel hat ihn am 2026-08-12 wieder streichen lassen:
+// Mannschaften kommen von Hand dazu. Nicht ungefragt neu bauen.
+let vereinsMannschaften = [];
+
+function renderVereinsListe() {
+  const dl = document.getElementById("vereins-mannschaften");
+  if (!dl) return;
+  dl.innerHTML = vereinsMannschaften
+    .map((m) => `<option value="${escapeHtml(m.kurz)}">${escapeHtml(m.lang)}${m.liga ? " · " + escapeHtml(m.liga) : ""}</option>`)
+    .join("");
 }
 
 function setupTeamForm() {
