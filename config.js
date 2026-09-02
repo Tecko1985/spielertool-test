@@ -2,43 +2,6 @@ const APP_VERSION = "1.0";
 
 const APP_CHANGELOG = [
   {
-    version: "1.3",
-    groups: [
-      {
-        title: "Der Reiter „Info“ erklärt jetzt, was die App wirklich tut",
-        items: [
-          "Dort stand bisher ein einzelner Satz. Jetzt steht da, wofür die einzelnen Reiter da sind, was die App mit den Eingaben macht und wo etwas anderes hingehört.",
-          "Am Funktionsumfang ändert sich nichts — nur an der Beschreibung."
-        ]
-      }
-    ]
-  },
-  {
-    version: "1.2",
-    groups: [
-      {
-        title: "Am Handy",
-        items: [
-          "Bisher brach die Reiterleiste selbst um, die rechte Reiter-Gruppe darin aber nicht: Sie rutschte als ein Stück in die zweite Zeile und lief dort weiter über den rechten Rand hinaus. Jetzt bricht auch sie um, sobald sie zu breit wird. Zu sehen ist das nur, wenn genug Reiter nebeneinanderstehen — bis dahin sieht alles aus wie bisher."
-        ]
-      }
-    ]
-  },
-  {
-    version: "1.1",
-    groups: [
-      {
-        title: "Mannschaften aus der Vereinsliste",
-        items: [
-          "Beim Anlegen einer Mannschaft schlägt das Namensfeld die echten Mannschaften des Vereins vor — die Liste, die in der Tools-Übersicht unter Einstellungen → Mannschaften gepflegt wird.",
-          "Einen eigenen Namen tippen geht weiter, etwa für eine Sichtungsgruppe.",
-          "Aufgelöste Mannschaften werden nicht vorgeschlagen.",
-          "Geburtsjahrgang und Gewichtungen bestehender Mannschaften bleiben unverändert."
-        ]
-      }
-    ]
-  },
-  {
     version: "1.0",
     groups: [
       {
@@ -47,6 +10,7 @@ const APP_CHANGELOG = [
           "Spieler anlegen, direkt in der Liste bearbeiten und suchen — nach Vor- und Nachname, Position und Geburtsdatum.",
           "Die Mannschaft ergibt sich automatisch aus dem Geburtsdatum.",
           "Mannschaftsverwaltung mit Altersstufen-Filter, der über alle Reiter hinweg wirkt.",
+          "Beim Anlegen einer Mannschaft schlägt das Namensfeld die echten Mannschaften des Vereins vor — die Liste, die in der Tools-Übersicht unter Einstellungen → Mannschaften gepflegt wird. Aufgelöste Mannschaften werden nicht vorgeschlagen, und ein eigener Name lässt sich weiterhin frei eintippen, etwa für eine Sichtungsgruppe.",
           "Feld „Spielertyp“ (Feldspieler oder Torhüter), beim Anlegen und später in der Liste änderbar."
         ]
       },
@@ -77,14 +41,15 @@ const APP_CHANGELOG = [
         items: [
           "Übersicht mit Filter danach, wie alt die letzte Bewertung ist — 3, 6, 9 oder 12 Monate.",
           "Spieler über der Förderschwelle sind markiert, ein Klick führt direkt zur Bewertung.",
-          "Spielerprofil mit Verlaufsdiagrammen über alle Bewertungszeitpunkte: Linie, Radar und Vergleich."
+          "Spielerprofil mit Verlaufsdiagrammen über alle Bewertungszeitpunkte: Linie, Radar und Vergleich.",
+          "Das Profil lässt sich als PDF ausgeben — mit dem Vergleich der letzten drei Bewertungen."
         ]
       },
       {
         title: "Wer darf was",
         items: [
           "Sehen: Spielerliste, Bewertungen, Profile und Diagramme. Die Bearbeiten-Bereiche sind ausgegraut und gesperrt — Spieler anlegen und bearbeiten, Bewertung erfassen, Mannschaften und Gewichtungen. Suche, Filter und Sortierung bleiben nutzbar.",
-          "Bearbeiten: Spieler und Bewertungen pflegen, Gewichtungen und Schwellen einstellen. Dazu der JSON-Export und das Profil als PDF.",
+          "Bearbeiten: Spieler und Bewertungen pflegen, Gewichtungen und Schwellen einstellen. Dazu der Reiter „Einstellungen“ mit dem Speicherort, dem JSON-Export und dem Profil als PDF.",
           "Administrieren: zusätzlich JSON- und Excel-Import sowie das automatische Backup.",
           "Im lokalen Datei-Modus ohne Anmeldung gelten diese Stufen nicht.",
           "Der Reiter „Info“ ist für alle sichtbar."
@@ -106,7 +71,7 @@ const APP_CHANGELOG = [
           "Wer das Werkzeug in der Übersicht sehen darf, kann die Spielerdaten öffnen; geprüft wird das auf dem Server.",
           "Alternativ und ohne Anmeldung: eine lokale Datei über den Dateiauswähler, deren Zugriffsrecht sich der Browser dauerhaft merkt.",
           "Spieler-Import aus Excel-Dateien mit Vorname, Nachname, Position und Geburtsdatum — mit oder ohne Kopfzeile.",
-          "Bei jedem Start legt die App ein datiertes Backup an.",
+          "Bei jedem Start legt die App ein datiertes Backup in einem wählbaren Ordner ab; zusätzlich lässt sich jederzeit von Hand sichern.",
           "Ändern zwei Geräte gleichzeitig denselben Stand, erkennt die App das, lädt den fremden Stand nach und sagt Bescheid.",
           "Rückmeldungen und Änderungswünsche laufen zentral über die Tools-Übersicht."
         ]

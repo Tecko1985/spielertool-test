@@ -18,7 +18,8 @@ braucht.
 | **Bewertung** | Eine neue Bewertung erfassen |
 | **Spielerprofil & Vergleich** | Das Profil eines Spielers und der direkte Spielervergleich |
 | **Mannschaften und Gewichtung** | Mannschaftsliste, **Altersgewichtungen** und die Förder-/Beobachtungsschwelle |
-| **Einstellungen** | Speicherort (Nextcloud-Verbindung) und JSON-Export; Import und Excel-Import darin sind der Administration vorbehalten |
+| **Einstellungen** | Speicherort (Nextcloud-Verbindung) und JSON-Export; JSON-Import, Excel-Import und das automatische Backup darin sind der Administration vorbehalten |
+| **Info** | Was die App tut, die Änderungen und der Datenschutz-Hinweis |
 
 ## Altersgewichtung und Schwelle
 
@@ -27,6 +28,22 @@ Jahrgang: Die **Altersgewichtungen** stellen ein, wie stark eine Altersklasse
 zählt. Wer die **Förder-/Beobachtungsschwelle** über- oder unterschreitet, fällt
 in der Übersicht auf — daraus wird die Förderentscheidung, nicht aus einer
 einzelnen Bewertung.
+
+## Feldspieler und Torhüter
+
+Jeder Spieler trägt einen **Spielertyp**. Bei einem Torhüter tritt der Bereich
+*Torwartspiel* mit sieben eigenen Kriterien an die Stelle von *Technik &
+Taktik* — Athletik, Mentale Stärke und Charakter & Sozial gelten unverändert für
+beide. Gewichtung und Förderschwelle bleiben dieselben, es muss also nichts
+umgestellt werden. Profil, Diagramme und der PDF-Export zeigen bei Torhütern von
+selbst die Torwart-Kriterien, und der Vergleich bietet nur denselben Spielertyp
+an.
+
+## Profil als PDF
+
+Aus dem Spielerprofil lässt sich ein PDF erzeugen, das die letzten drei
+Bewertungen gegenüberstellt — für das Gespräch mit Spieler und Eltern oder für
+die Ablage.
 
 ## Sensible Daten
 
@@ -44,7 +61,9 @@ Hier werden **eigene** Spieler bewertet und gefördert. Die Beobachtung
 
 Die Anmeldung läuft über die [Tools-Übersicht](https://sc1911heiligenstadt.github.io/ToolsUebersicht/) — dort einmal anmelden, danach ist dieses Werkzeug offen.
 
-Die Rechte gelten in drei Stufen: **Sehen** (Dashboard, Spielerprofile und Vergleich ansehen), **Bearbeiten** (Spieler pflegen und bewerten — dazu gehört auch der Reiter *Einstellungen* mit dem eigenen Speicherort und dem JSON-Export) und **Administrieren** (Import und Excel-Import innerhalb der Einstellungen). Wer welche Stufe hat, legt die Tools-Übersicht fest.
+Die Rechte gelten in drei Stufen: **Sehen** (Dashboard, Spielerprofile und Vergleich ansehen), **Bearbeiten** (Spieler pflegen und bewerten — dazu gehört auch der Reiter *Einstellungen* mit dem eigenen Speicherort und dem JSON-Export) und **Administrieren** (JSON-Import, Excel-Import und das automatische Backup innerhalb der Einstellungen). Wer welche Stufe hat, legt die Tools-Übersicht fest. Der Reiter *Info* ist für alle sichtbar.
+
+Wird die App stattdessen ohne Anmeldung mit einer lokalen Datei betrieben, gelten diese Stufen nicht.
 
 ## Lokal starten
 
