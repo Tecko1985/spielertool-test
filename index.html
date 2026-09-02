@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>⚽ Spieler-Scouting & Förderung</title>
+<link rel="manifest" href="manifest.json" />
+<meta name="theme-color" content="#1a56a0" />
+<!-- Chart.js, jsPDF + autoTable und SheetJS standen hier fest im <head> und
+     hielten damit jeden Seitenaufruf auf (zusammen rund 1,5 MB roh), obwohl sie
+     nur im Spielerprofil, beim PDF-Export und beim Excel-Import gebraucht
+     werden. Sie werden jetzt bei Bedarf nachgeladen -- siehe ladeBibliothek()
+     in app.js (dort auch der Grund, warum autoTable NACH jsPDF kommen muss). -->
+<link rel="stylesheet" href="style.css?v=1.0" />
+</head>
+<body>
+
+<header>
+  <h1>⚽ Spieler-Scouting & Förderung</h1>
+  <a href="https://sc1911heiligenstadt.github.io/ToolsUebersicht/" class="back-to-dashboard">← Zurück zum Dashboard</a>
+  <div class="header-right">
+    <select id="team-filter-select" class="team-filter-select"></select>
+    <div class="file-status" id="file-status"><span class="dot"></span><span class="label">Nicht verbunden</span></div>
+    <img class="header-logo" src="https://sc1911heiligenstadt.github.io/logo.svg" alt="1. SC 1911 Heiligenstadt e.V." />
+  </div>
+</header>
+
+<!-- Verbindungs-Screen -->
+<div class="connect-screen" id="connect-screen">
+  <div class="card">
+    <h2>Datendatei verbinden</h2>
+    <p>
+      Die Spielerdaten werden in einer JSON-Datei in diesem Nextcloud-Ordner gespeichert
+      (synct automatisch zur Hetzner Storage Share). Öffne eine vorhandene Datei oder lege
+      eine neue an.
+    </p>
+    <div class="btn-row" id="connect-default-actions">
+      <button class="btn" id="btn-connect-existing">Vorhandene Datei öffnen</button>
+      <button class="btn secondary" id="btn-connect-new">Neue Datei erstellen</button>
+    </div>
+    <div id="reconnect-block" style="display:none;">
+      <p class="muted" style="margin-bottom:16px;">
+        Es ist bereits eine Datendatei hinterlegt. Der Browser möchte den Zugriff nur kurz erneut bestätigt haben
+        (kein erneutes Auswählen der Datei nötig).
+      </p>
+      <div class="btn-row">
+        <button class="btn" id="btn-reconnect">Zugriff erneut erlauben</button>
+        <button class="btn secondary" id="btn-reconnect-other">Andere Datei wählen</button>
+      </div>
+    </div>
+    <p class="muted" id="fs-api-warning" style="display:none; margin-top:16px;">
+      Dein Browser unterstützt die File-System-API nicht (z.B. auf dem Handy). Nutze stattdessen
+      die automatische Nextcloud-Synchronisierung unten – dafür einmalig in der Tools-Übersicht anmelden.
+    </p>
+  </div>
+
+  <div class="card" id="cloud-login-section" style="margin-top:16px;">
+    <h2>Automatische Nextcloud-Synchronisierung (auch am Handy)</h2>
+    <p class="muted" style="margin-bottom:14px;">
+      Melde dich einmalig in der <strong>Tools-Übersicht</strong> an – danach werden die Spielerdaten
+      automatisch aus der Vereins-Nextcloud geladen und gespeichert, ganz ohne Zugangsdaten oder
+      App-Passwort auf diesem Gerät. Funktioniert auch mobil.
+    </p>
+    <div class="btn-row" style="justify-content:flex-start;">
+      <a class="btn" href="https://sc1911heiligenstadt.github.io/ToolsUebersicht/">Zur Tools-Übersicht &amp; anmelden</a>
+    </div>
+    <p class="muted" id="cloud-error" style="display:none; color:#c0392b; margin-top:12px;"></p>
+  </div>
+</div>
+
+<!-- App -->
+<div id="app-shell" style="display:none;">
+  <nav>
+    <button data-tab="dashboard" class="active">Dashboard</button>
+    <button data-tab="players">Spieler verwalten</button>
+    <button data-tab="evaluate">Bewertung</button>
+    <button data-tab="profile">Spielerprofil &amp; Vergleich</button>
+    <button data-tab="teams">Mannschaften und Gewichtung</button>
+    <div class="nav-right">
+      <button data-tab="settings" class="editor-only hidden">Einstellungen</button>
+      <button data-tab="info">Info</button>
+    </div>
+  </nav>
+
+  <main>
+
+    <!-- Dashboard -->
+    <section class="tab-section active" id="tab-dashboard">
+      <div class="card">
+        <h2>Team-Übersicht</h2>
+        <div style="display:flex; gap:16px; flex-wrap:wrap; margin-bottom:14px;">
+          <div class="form-field" style="max-width:280px;">
+            <label>Mannschaft</label>
+            <select id="dashboard-team-filter-select"></select>
+          </div>
+          <div class="form-field" style="max-width:280px;">
+            <label>Letzte Bewertung älter als</label>
+            <select id="dashboard-staleness-select">
+              <option value="">Alle anzeigen</option>
+              <option value="3">3 Monate</option>
+              <option value="6">6 Monate</option>
+              <option value="9">9 Monate</option>
+              <option value="12">12 Monate</option>
+            </select>
+          </div>
+          <div class="form-field" style="max-width:280px; align-self:flex-end;">
+            <label style="display:flex; align-items:center; gap:6px; font-weight:600; cursor:pointer;">
+              <input type="checkbox" id="dashboard-threshold-checkbox" style="width:auto;" />
+              🔭 Nur über Förder-/Beobachtungsschwelle
+            </label>
+          </div>
+        </div>
+        <div class="empty-state" id="dashboard-empty" style="display:none;">Noch keine Spieler angelegt. Wechsle zu "Spieler verwalten".</div>
+        <div class="table-scroll">
+          <table>
+            <thead>
+              <tr><th>Name</th><th>Position</th><th>Team</th><th>Letzte Bewertung</th><th>Gesamtscore</th><th>Gewichtet</th><th></th></tr>
+            </thead>
+            <tbody id="dashboard-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- Mannschaften -->
+    <section class="tab-section" id="tab-teams">
+      <div class="card">
+        <h2>Neue Mannschaft anlegen</h2>
+        <form id="team-form">
+          <div class="form-grid">
+            <!-- datalist: die Mannschaften des Vereins zur Auswahl, aber ein
+                 eigener Name bleibt tippbar (bewusst kein <select>). -->
+            <div class="form-field">
+              <label>Name *</label>
+              <input type="text" id="team-name" list="vereins-mannschaften" placeholder="z. B. B1 — oder eigener Name" autocomplete="off" required />
+              <datalist id="vereins-mannschaften"></datalist>
+            </div>
+            <div class="form-field"><label>Geburtsdatum von</label><input type="date" id="team-birthdate-from" /></div>
+            <div class="form-field"><label>Geburtsdatum bis</label><input type="date" id="team-birthdate-to" /></div>
+          </div>
+          <p class="muted" style="margin-bottom:12px;">
+            Optional: Wird ein Geburtsdatums-Bereich angegeben (z.B. 01.01.2011 bis 31.12.2011 für Jahrgang 2011), werden Spieler
+            anhand ihres Geburtsdatums automatisch dieser Mannschaft zugeordnet — beim Älterwerden wechseln sie ohne manuelles
+            Umsortieren in die passende Mannschaft.
+          </p>
+          <button class="btn" type="submit">Mannschaft hinzufügen</button>
+        </form>
+      </div>
+      <div class="card">
+        <h2>Mannschaftsliste</h2>
+        <div class="form-field" style="max-width:280px; margin-bottom:14px;">
+          <label>Sortieren nach</label>
+          <select id="teams-sort-select">
+            <option value="age-desc">Alter (älteste Mannschaft zuerst)</option>
+            <option value="age-asc">Alter (jüngste Mannschaft zuerst)</option>
+            <option value="name-asc">Name (A-Z)</option>
+            <option value="name-desc">Name (Z-A)</option>
+            <option value="count-desc">Anzahl Spieler (meiste zuerst)</option>
+            <option value="count-asc">Anzahl Spieler (wenigste zuerst)</option>
+          </select>
+        </div>
+        <p class="muted" style="margin-bottom:10px;">Felder direkt anklicken und bearbeiten – die Änderung wird beim Verlassen des Feldes übernommen.</p>
+        <div class="team-edit-row team-edit-header">
+          <span>Name</span><span>Geburtsdatum von</span><span>Geburtsdatum bis</span><span>Spieler</span><span></span>
+        </div>
+        <div class="player-grid" id="teams-list"></div>
+      </div>
+      <div class="card">
+        <h2>Altersgewichtungen</h2>
+        <p class="muted" style="margin-bottom:12px;">
+          Bestimmt, wie stark Technik &amp; Taktik, Athletik, Mentale Stärke und Charakter &amp; Sozial je Altersstufe in den
+          gewichteten Gesamtwert (%) einfließen. Die Mannschaft eines Spielers wird über sein Geburtsdatum automatisch einer
+          Altersstufe zugeordnet (≤10 Jahre = F/E, 11–14 = D/C, 15–18 = A/B). Werte je Zeile müssen in Summe 100 ergeben.
+          Bei Torhütern tritt das Torwartspiel an die Stelle von Technik &amp; Taktik und wird genauso gewichtet.
+        </p>
+        <div id="weights-criteria-legend" style="margin-bottom:14px;"></div>
+        <div class="weights-row weights-header">
+          <span>Altersstufe</span><span>Technik &amp; Taktik<br /><span class="muted" style="font-weight:400;">bzw. Torwartspiel</span></span><span>Athletik</span><span>Mental</span><span>Charakter</span><span>Summe</span>
+        </div>
+        <div id="age-weights-list"></div>
+      </div>
+      <div class="card">
+        <h2>Förder-/Beobachtungsschwelle</h2>
+        <p class="muted" style="margin-bottom:12px;">
+          Ab welchem gewichteten Gesamtwert (%) ein Spieler je Altersstufe als Kandidat für genauere Beobachtung
+          bzw. stärkere Förderung markiert wird (z.B. im Dashboard). Frei pro Altersstufe einstellbar.
+        </p>
+        <div class="threshold-row threshold-header">
+          <span>Altersstufe</span><span>Schwelle (%)</span>
+        </div>
+        <div id="age-thresholds-list"></div>
+      </div>
+    </section>
+
+    <!-- ---------- Info ---------- -->
+    <section class="tab-section" id="tab-info">
+      <div class="card">
+        <h2>Über das Spieler-Scouting <span class="version-badge" id="version-badge-2"></span></h2>
+        <p class="muted">
+            Bewertung und Förderung von Nachwuchsspielern im Vereinsbetrieb.
+            Spieler werden regelmäßig bewertet, Profile lassen sich direkt vergleichen. Gemessen
+            wird dabei nicht gegen den ganzen Verein, sondern gegen den Jahrgang — dafür sorgen die
+            Altersgewichtungen. Wer die Förder-/Beobachtungsschwelle über- oder unterschreitet,
+            fällt in der Übersicht auf; daraus wird die Förderentscheidung, nicht aus einer
+            einzelnen Bewertung.
+          </p>
+      </div>
+      <div class="card">
+        <h2>Änderungen</h2>
+        <div id="changelog-list"></div>
+      </div>
+    
+      <div class="card" id="ds-info-karte">
+        <h2>Datenschutz</h2>
+        <p>Dieses Werkzeug gehört zu den internen Anwendungen des
+        1. SC 1911 Heiligenstadt. Die hier erfassten Daten werden
+        ausschließlich für die Vereinsarbeit verwendet und liegen auf Servern
+        in Deutschland, die ein Auftragsverarbeiter für den Verein betreibt.
+        Eine Weitergabe an Dritte findet nur statt, soweit sie für den
+        jeweiligen Zweck erforderlich oder gesetzlich vorgeschrieben ist.</p>
+        <p>Verantwortlich ist der 1. SC 1911 Heiligenstadt, Leineberg 2,
+        37308 Heilbad Heiligenstadt, Telefon 03606 612206,
+        <a href="mailto:info@sc1911-heiligenstadt.de">info@sc1911-heiligenstadt.de</a>.
+        Auskunft, Berichtigung, Löschung, Einschränkung der Verarbeitung,
+        Datenübertragbarkeit und Widerspruch lassen sich unter dieser
+        Anschrift geltend machen. Beschwerden nimmt der Thüringer
+        Landesbeauftragte für den Datenschutz und die Informationsfreiheit
+        entgegen.</p>
+        <p><a href="https://www.sc1911-heiligenstadt.de/datenschutz/" target="_blank" rel="noopener">Datenschutzerklärung des Vereins</a>
+        &middot;
+        <a href="https://www.sc1911-heiligenstadt.de/impressum-2/" target="_blank" rel="noopener">Impressum</a></p>
+      </div>
+</section>
+
+    <!-- Einstellungen -->
+    <section class="tab-section" id="tab-settings">
+      <div class="card">
+        <h3>Speicherort</h3>
+        <p class="muted" style="margin-bottom:6px;">
+          Datei: <strong id="settings-file-name">—</strong>
+        </p>
+        <p class="muted" style="margin-bottom:10px;" id="settings-save-status">
+          Autospeichern aktiv · Autoladen beim nächsten Öffnen aktiv
+        </p>
+        <div class="btn-row" style="justify-content:flex-start;" id="settings-fs-actions">
+          <button class="btn secondary small" id="btn-change-location-existing">Andere Datei öffnen…</button>
+          <button class="btn secondary small" id="btn-change-location-new">Aktuelle Daten an neuem Ort speichern…</button>
+        </div>
+        <div class="btn-row" style="justify-content:flex-start; display:none;" id="settings-webdav-actions">
+          <button class="btn secondary small" id="btn-webdav-disconnect">Nextcloud-Verbindung trennen</button>
+        </div>
+      </div>
+      <div class="card editor-only hidden">
+        <h3>Daten-Sicherung</h3>
+        <p class="muted" style="margin-bottom:10px;">Zusätzliche Sicherheitskopie unabhängig von der verbundenen Datei.</p>
+        <div class="btn-row" style="justify-content:flex-start;">
+          <button class="btn secondary small" id="btn-export">JSON exportieren</button>
+          <button class="btn secondary small admin-only hidden" id="btn-import">JSON importieren</button>
+          <input type="file" id="import-file-input" accept="application/json" style="display:none;" />
+        </div>
+      </div>
+      <div class="card admin-only hidden">
+        <h3>Spieler aus Excel importieren</h3>
+        <p class="muted" style="margin-bottom:10px;">
+          Importiert Spieler aus einer Excel-Datei (.xlsx) und legt sie wie im Tab "Spieler verwalten" an
+          (Mannschaft wird automatisch anhand des Geburtsdatums zugeordnet). Es wird <strong>keine Spaltenüberschrift
+          benötigt</strong> – die Spalten müssen nur in dieser Reihenfolge stehen:
+          <strong>1. Vorname, 2. Nachname, 3. Position, 4. Geburtsdatum</strong>.
+          Falls die erste Zeile doch Überschriften enthält, wird sie automatisch erkannt und übersprungen.
+        </p>
+        <div class="btn-row" style="justify-content:flex-start;">
+          <button class="btn secondary small" id="btn-import-excel">Excel-Datei wählen…</button>
+          <input type="file" id="import-excel-input" accept=".xlsx,.xls,.csv" style="display:none;" />
+        </div>
+        <p class="muted" id="settings-excel-import-status" style="margin-top:10px;"></p>
+      </div>
+      <div class="card admin-only hidden">
+        <h3>Automatisches Backup</h3>
+        <p class="muted" style="margin-bottom:6px;">
+          Ordner: <strong id="settings-backup-folder-name">— kein Ordner gewählt —</strong>
+        </p>
+        <p class="muted" style="margin-bottom:10px;" id="settings-backup-status">
+          Bei jedem Start der App wird automatisch eine Sicherungskopie mit Datum im gewählten Ordner abgelegt.
+        </p>
+        <div class="btn-row" style="justify-content:flex-start;">
+          <button class="btn secondary small" id="btn-choose-backup-folder">Backup-Ordner wählen…</button>
+          <button class="btn secondary small" id="btn-backup-now">Jetzt sichern</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Spieler verwalten -->
+    <section class="tab-section" id="tab-players">
+      <div class="card">
+        <h2>Neuen Spieler anlegen</h2>
+        <form id="player-form">
+          <div class="form-grid">
+            <div class="form-field"><label>Vorname</label><input type="text" id="p-firstname" /></div>
+            <div class="form-field"><label>Nachname *</label><input type="text" id="p-lastname" required /></div>
+            <div class="form-field"><label>Position</label><input type="text" id="p-position" placeholder="z.B. ZM, IV, ST" /></div>
+            <div class="form-field">
+              <label>Spielertyp</label>
+              <select id="p-spielertyp">
+                <option value="feldspieler">Feldspieler</option>
+                <option value="torhueter">Torhüter</option>
+              </select>
+            </div>
+            <div class="form-field"><label>Geburtsdatum</label><input type="date" id="p-birthdate" /></div>
+          </div>
+          <p class="muted" style="margin-bottom:12px;">
+            Die Mannschaft wird anhand des Geburtsdatums automatisch zugeordnet (siehe Tab "Mannschaften").
+          </p>
+          <button class="btn" type="submit">Spieler hinzufügen</button>
+        </form>
+      </div>
+      <div class="card">
+        <h2>Spielerliste</h2>
+        <div style="display:flex; gap:16px; flex-wrap:wrap; margin-bottom:14px;">
+          <div class="form-field" style="max-width:220px;">
+            <label>Suche</label>
+            <input type="text" id="players-search-input" placeholder="Vor- oder Nachname…" />
+          </div>
+          <div class="form-field" style="max-width:280px;">
+            <label>Mannschaft</label>
+            <select id="players-team-filter-select"></select>
+          </div>
+          <div class="form-field" style="max-width:200px;">
+            <label>Position</label>
+            <select id="players-position-filter-select">
+              <option value="">Alle Positionen</option>
+            </select>
+          </div>
+          <div class="form-field" style="max-width:240px;">
+            <label>Sortieren nach</label>
+            <select id="players-sort-select">
+              <option value="name-asc">Name (A-Z)</option>
+              <option value="name-desc">Name (Z-A)</option>
+              <option value="birthdate-asc">Geburtsdatum (ältester zuerst)</option>
+              <option value="birthdate-desc">Geburtsdatum (jüngster zuerst)</option>
+            </select>
+          </div>
+          <div class="form-field" style="max-width:180px;">
+            <label>Geburtsdatum von</label>
+            <input type="date" id="players-birthdate-from-filter" />
+          </div>
+          <div class="form-field" style="max-width:180px;">
+            <label>Geburtsdatum bis</label>
+            <input type="date" id="players-birthdate-to-filter" />
+          </div>
+        </div>
+        <p class="muted" style="margin-bottom:10px;">Felder direkt anklicken und bearbeiten – die Änderung wird beim Verlassen des Feldes übernommen.</p>
+        <div class="player-edit-row player-edit-header">
+          <span>Vorname</span><span>Nachname</span><span>Position</span><span>Spielertyp</span><span>Geburtsdatum</span><span>Mannschaft</span><span></span>
+        </div>
+        <div class="player-grid" id="players-list"></div>
+      </div>
+    </section>
+
+    <!-- Neue Bewertung -->
+    <section class="tab-section" id="tab-evaluate">
+      <div class="card">
+        <h2>Neue Bewertung erfassen</h2>
+        <div style="display:flex; gap:16px; flex-wrap:wrap; margin-bottom:14px;">
+          <div class="form-field" style="max-width:280px;">
+            <label>Mannschaft (Filter)</label>
+            <select id="evaluate-team-filter-select"></select>
+          </div>
+          <div class="form-field" style="max-width:280px;">
+            <label>Vergleichsspieler (optional)</label>
+            <select id="eval-compare-player-select">
+              <option value="">— kein Vergleich, Bestwert anzeigen —</option>
+            </select>
+          </div>
+        </div>
+        <form id="evaluate-form">
+          <div class="form-grid">
+            <div class="form-field">
+              <label>Spieler *</label>
+              <select id="eval-player-select" required></select>
+              <div class="muted" id="eval-last-evaluation-info" style="margin-top:4px;"></div>
+            </div>
+            <div class="form-field"><label>Datum</label><input type="date" id="eval-date" /></div>
+            <div class="form-field"><label>Bewerter / Trainer</label><input type="text" id="eval-evaluator" /></div>
+          </div>
+          <div id="eval-categories"></div>
+          <div class="form-field" style="margin-bottom:14px;">
+            <label>Notizen</label>
+            <textarea id="eval-notes" rows="3" placeholder="Freitext-Beobachtungen..."></textarea>
+          </div>
+          <div class="sticky-total">
+            <span>Gesamtscore</span>
+            <span class="total-val" id="eval-total-val">0 / 0</span>
+            <button class="btn success" type="submit">Bewertung speichern</button>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <!-- Spielerprofil -->
+    <section class="tab-section" id="tab-profile">
+      <div class="card">
+        <h2>Spielerprofil</h2>
+        <div style="display:flex; gap:16px; flex-wrap:wrap;">
+          <div class="form-field" style="max-width:280px;">
+            <label>Mannschaft (Filter)</label>
+            <select id="profile-team-filter-select"></select>
+          </div>
+          <div class="form-field" style="max-width:320px;">
+            <label>Spieler wählen</label>
+            <select id="profile-player-select"></select>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Spielervergleich</h2>
+        <p class="muted" style="margin-bottom:12px;">Bis zu 4 Spieler anhand ihrer letzten Bewertung direkt vergleichen.</p>
+        <div class="form-grid">
+          <div class="form-field"><label>Spieler 1</label><select id="compare-player-1"></select></div>
+          <div class="form-field"><label>Spieler 2</label><select id="compare-player-2"></select></div>
+          <div class="form-field"><label>Spieler 3</label><select id="compare-player-3"></select></div>
+          <div class="form-field"><label>Spieler 4</label><select id="compare-player-4"></select></div>
+        </div>
+        <div class="chart-wrap" style="max-width:480px; margin:0 auto 18px;"><canvas id="compare-radar-chart"></canvas></div>
+        <p class="muted" id="compare-mixed-hint" style="display:none; margin:-8px 0 14px;">
+          Hinweis: Es werden Torhüter und Feldspieler zusammen verglichen. Die erste Achse steht bei Torhütern
+          für das Torwartspiel und bei Feldspielern für Technik &amp; Taktik – sie ist inhaltlich nicht direkt vergleichbar.
+        </p>
+        <div class="empty-state" id="compare-empty" style="display:none;">Bitte mindestens einen Spieler auswählen.</div>
+        <div class="table-scroll">
+          <table id="compare-table" style="display:none;">
+            <thead>
+              <tr><th>Spieler</th><th>Mannschaft</th><th>Altersstufe</th><th>Letzte Bewertung</th><th>Gesamtscore</th><th>Gewichtet</th></tr>
+            </thead>
+            <tbody id="compare-table-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="empty-state" id="profile-empty">Bitte einen Spieler wählen, um sein Profil und den Verlauf zu sehen.</div>
+
+      <div id="profile-detail" style="display:none;">
+        <div class="card">
+          <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:12px; flex-wrap:wrap;">
+            <div>
+              <h2 id="profile-name"></h2>
+              <p class="muted" id="profile-meta"></p>
+            </div>
+            <button class="btn secondary small editor-only hidden" id="btn-export-profile-pdf">PDF exportieren (Vergleich letzte 3 Bewertungen)</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>Entwicklung über die Zeit</h3>
+          <div class="charts-grid">
+            <div class="chart-wrap"><canvas id="profile-line-chart"></canvas></div>
+            <div class="chart-wrap"><canvas id="profile-radar-chart"></canvas></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>Bewertungsverlauf</h3>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>Datum</th><th>Bewerter</th><th>Score</th><th>Gewichtet</th><th>Notizen</th><th></th></tr></thead>
+              <tbody id="profile-history-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<script src="config.js?v=1.0"></script>
+<script src="db.js?v=1.0"></script>
+<script src="app.js?v=1.0"></script>
+</body>
+</html>
