@@ -2,6 +2,18 @@ const APP_VERSION = "1.0";
 
 const APP_CHANGELOG = [
   {
+    version: "1.1",
+    groups: [
+      {
+        title: "Datumsangaben im deutschen Format",
+        items: [
+          "Bewertungsdaten standen überall in der technischen Schreibweise da („2026-09-04“ statt „4.9.2026“) — in der Spielerliste, über der Bewertungsmaske, in der Bewertungshistorie, im Vergleich, an den Diagrammen und in den Spaltenköpfen des PDF. Im PDF stand direkt daneben schon „Erstellt am 4.9.2026“, also zwei Schreibweisen in einem Blatt.",
+          "Jetzt überall dasselbe deutsche Format. An den Daten selbst ändert sich nichts, nur an der Anzeige."
+        ]
+      }
+    ]
+  },
+  {
     version: "1.0",
     groups: [
       {

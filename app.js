@@ -1304,7 +1304,7 @@ function renderDashboard() {
       <td>${escapeHtml(playerFullName(p))}</td>
       <td>${escapeHtml(p.position || "—")}</td>
       <td>${escapeHtml(teamName(p.teamId) || "—")}</td>
-      <td class="${stalenessClass(days)}">${last ? `${escapeHtml(last.date)} <span class="muted">(vor ${days} Tagen)</span>` : "noch nie bewertet"}</td>
+      <td class="${stalenessClass(days)}">${last ? `${escapeHtml(formatDateDe(last.date))} <span class="muted">(vor ${days} Tagen)</span>` : "noch nie bewertet"}</td>
       <td>
         <div class="score-cell">
           <div class="score-bar-bg"><div class="score-bar-fill" style="width:${pct}%"></div></div>
@@ -1509,7 +1509,7 @@ function updateLastEvaluationInfo() {
     return;
   }
   const total = totalScore(last.scores);
-  info.textContent = `Letzte Bewertung: ${last.date} (${total} / ${TOTAL_MAX_SCORE} Punkte) — Werte unten sind damit vorausgefüllt.`;
+  info.textContent = `Letzte Bewertung: ${formatDateDe(last.date)} (${total} / ${TOTAL_MAX_SCORE} Punkte) — Werte unten sind damit vorausgefüllt.`;
 }
 
 function updateEvalTotal() {
@@ -1621,7 +1621,7 @@ function renderProfileHistoryTable(evals, ageGroup, player) {
       const weighted = Math.round(weightedPercent(ev.scores, ageGroup, player));
       return `
       <tr data-id="${escapeHtml(ev.id)}">
-        <td>${escapeHtml(ev.date)}</td>
+        <td>${escapeHtml(formatDateDe(ev.date))}</td>
         <td>${escapeHtml(ev.evaluator || "—")}</td>
         <td>
           <div class="score-cell">
@@ -1733,7 +1733,7 @@ async function renderProfileCharts(evals, player) {
   if (profileCharts.line) profileCharts.line.destroy();
   if (profileCharts.radar) profileCharts.radar.destroy();
 
-  const labels = evals.map((e) => e.date);
+  const labels = evals.map((e) => formatDateDe(e.date));
   const totals = evals.map((e) => totalScore(e.scores));
   const datasets = [
     {
@@ -1776,7 +1776,7 @@ async function renderProfileCharts(evals, player) {
   const compareEvals = evals.slice(-3).reverse();
   const radarDatasets = compareEvals.length
     ? compareEvals.map((ev, i) => ({
-        label: ev.date,
+        label: formatDateDe(ev.date),
         data: cats.map((cat) => Math.round((categorySubtotal(ev.scores, cat) / cat.max) * 100)),
         borderColor: radarColors[i].border,
         backgroundColor: radarColors[i].bg
@@ -1853,7 +1853,7 @@ async function renderPlayerComparison() {
           <td>${escapeHtml(playerFullName(player))}</td>
           <td>${escapeHtml(teamName(player.teamId) || "—")}</td>
           <td>${ageGroup ? escapeHtml(AGE_GROUP_LABELS[ageGroup]) : "—"}</td>
-          <td>${latest ? escapeHtml(latest.date) : "—"}</td>
+          <td>${latest ? escapeHtml(formatDateDe(latest.date)) : "—"}</td>
           <td>${total !== null ? total + " / " + TOTAL_MAX_SCORE : "—"}</td>
           <td><strong>${weighted !== null ? weighted + "%" : "—"}</strong></td>
         </tr>`;
@@ -1933,7 +1933,7 @@ async function exportProfilePdf() {
   doc.text(`Vergleich der letzten ${compareEvals.length} Bewertung${compareEvals.length > 1 ? "en" : ""} · Erstellt am ${new Date().toLocaleDateString("de-DE")}`, 14, 27);
   doc.setTextColor(0);
 
-  const head = ["Kriterium", ...compareEvals.map((e) => e.date)];
+  const head = ["Kriterium", ...compareEvals.map((e) => formatDateDe(e.date))];
   const body = [];
   scoreCategoriesFor(player).forEach((cat) => {
     body.push([
