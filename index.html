@@ -90,11 +90,11 @@
         <h2>Team-Übersicht</h2>
         <div style="display:flex; gap:16px; flex-wrap:wrap; margin-bottom:14px;">
           <div class="form-field" style="max-width:280px;">
-            <label>Mannschaft</label>
+            <label for="dashboard-team-filter-select">Mannschaft</label>
             <select id="dashboard-team-filter-select"></select>
           </div>
           <div class="form-field" style="max-width:280px;">
-            <label>Letzte Bewertung älter als</label>
+            <label for="dashboard-staleness-select">Letzte Bewertung älter als</label>
             <select id="dashboard-staleness-select">
               <option value="">Alle anzeigen</option>
               <option value="3">3 Monate</option>
@@ -131,12 +131,12 @@
             <!-- datalist: die Mannschaften des Vereins zur Auswahl, aber ein
                  eigener Name bleibt tippbar (bewusst kein <select>). -->
             <div class="form-field">
-              <label>Name *</label>
+              <label for="team-name">Name *</label>
               <input type="text" id="team-name" list="vereins-mannschaften" placeholder="z. B. B1 — oder eigener Name" autocomplete="off" required />
               <datalist id="vereins-mannschaften"></datalist>
             </div>
-            <div class="form-field"><label>Geburtsdatum von</label><input type="date" id="team-birthdate-from" /></div>
-            <div class="form-field"><label>Geburtsdatum bis</label><input type="date" id="team-birthdate-to" /></div>
+            <div class="form-field"><label for="team-birthdate-from">Geburtsdatum von</label><input type="date" id="team-birthdate-from" /></div>
+            <div class="form-field"><label for="team-birthdate-to">Geburtsdatum bis</label><input type="date" id="team-birthdate-to" /></div>
           </div>
           <p class="muted" style="margin-bottom:12px;">
             Optional: Wird ein Geburtsdatums-Bereich angegeben (z.B. 01.01.2011 bis 31.12.2011 für Jahrgang 2011), werden Spieler
@@ -149,7 +149,7 @@
       <div class="card">
         <h2>Mannschaftsliste</h2>
         <div class="form-field" style="max-width:280px; margin-bottom:14px;">
-          <label>Sortieren nach</label>
+          <label for="teams-sort-select">Sortieren nach</label>
           <select id="teams-sort-select">
             <option value="age-desc">Alter (älteste Mannschaft zuerst)</option>
             <option value="age-asc">Alter (jüngste Mannschaft zuerst)</option>
@@ -292,17 +292,17 @@
         <h2>Neuen Spieler anlegen</h2>
         <form id="player-form">
           <div class="form-grid">
-            <div class="form-field"><label>Vorname</label><input type="text" id="p-firstname" /></div>
-            <div class="form-field"><label>Nachname *</label><input type="text" id="p-lastname" required /></div>
-            <div class="form-field"><label>Position</label><input type="text" id="p-position" placeholder="z.B. ZM, IV, ST" /></div>
+            <div class="form-field"><label for="p-firstname">Vorname</label><input type="text" id="p-firstname" /></div>
+            <div class="form-field"><label for="p-lastname">Nachname *</label><input type="text" id="p-lastname" required /></div>
+            <div class="form-field"><label for="p-position">Position</label><input type="text" id="p-position" placeholder="z.B. ZM, IV, ST" /></div>
             <div class="form-field">
-              <label>Spielertyp</label>
+              <label for="p-spielertyp">Spielertyp</label>
               <select id="p-spielertyp">
                 <option value="feldspieler">Feldspieler</option>
                 <option value="torhueter">Torhüter</option>
               </select>
             </div>
-            <div class="form-field"><label>Geburtsdatum</label><input type="date" id="p-birthdate" /></div>
+            <div class="form-field"><label for="p-birthdate">Geburtsdatum</label><input type="date" id="p-birthdate" /></div>
           </div>
           <p class="muted" style="margin-bottom:12px;">
             Die Mannschaft wird anhand des Geburtsdatums automatisch zugeordnet (siehe Tab "Mannschaften").
@@ -314,21 +314,21 @@
         <h2>Spielerliste</h2>
         <div style="display:flex; gap:16px; flex-wrap:wrap; margin-bottom:14px;">
           <div class="form-field" style="max-width:220px;">
-            <label>Suche</label>
+            <label for="players-search-input">Suche</label>
             <input type="text" id="players-search-input" placeholder="Vor- oder Nachname…" />
           </div>
           <div class="form-field" style="max-width:280px;">
-            <label>Mannschaft</label>
+            <label for="players-team-filter-select">Mannschaft</label>
             <select id="players-team-filter-select"></select>
           </div>
           <div class="form-field" style="max-width:200px;">
-            <label>Position</label>
+            <label for="players-position-filter-select">Position</label>
             <select id="players-position-filter-select">
               <option value="">Alle Positionen</option>
             </select>
           </div>
           <div class="form-field" style="max-width:240px;">
-            <label>Sortieren nach</label>
+            <label for="players-sort-select">Sortieren nach</label>
             <select id="players-sort-select">
               <option value="name-asc">Name (A-Z)</option>
               <option value="name-desc">Name (Z-A)</option>
@@ -337,11 +337,11 @@
             </select>
           </div>
           <div class="form-field" style="max-width:180px;">
-            <label>Geburtsdatum von</label>
+            <label for="players-birthdate-from-filter">Geburtsdatum von</label>
             <input type="date" id="players-birthdate-from-filter" />
           </div>
           <div class="form-field" style="max-width:180px;">
-            <label>Geburtsdatum bis</label>
+            <label for="players-birthdate-to-filter">Geburtsdatum bis</label>
             <input type="date" id="players-birthdate-to-filter" />
           </div>
         </div>
@@ -359,11 +359,11 @@
         <h2>Neue Bewertung erfassen</h2>
         <div style="display:flex; gap:16px; flex-wrap:wrap; margin-bottom:14px;">
           <div class="form-field" style="max-width:280px;">
-            <label>Mannschaft (Filter)</label>
+            <label for="evaluate-team-filter-select">Mannschaft (Filter)</label>
             <select id="evaluate-team-filter-select"></select>
           </div>
           <div class="form-field" style="max-width:280px;">
-            <label>Vergleichsspieler (optional)</label>
+            <label for="eval-compare-player-select">Vergleichsspieler (optional)</label>
             <select id="eval-compare-player-select">
               <option value="">— kein Vergleich, Bestwert anzeigen —</option>
             </select>
@@ -372,16 +372,16 @@
         <form id="evaluate-form">
           <div class="form-grid">
             <div class="form-field">
-              <label>Spieler *</label>
+              <label for="eval-player-select">Spieler *</label>
               <select id="eval-player-select" required></select>
               <div class="muted" id="eval-last-evaluation-info" style="margin-top:4px;"></div>
             </div>
-            <div class="form-field"><label>Datum</label><input type="date" id="eval-date" /></div>
-            <div class="form-field"><label>Bewerter / Trainer</label><input type="text" id="eval-evaluator" /></div>
+            <div class="form-field"><label for="eval-date">Datum</label><input type="date" id="eval-date" /></div>
+            <div class="form-field"><label for="eval-evaluator">Bewerter / Trainer</label><input type="text" id="eval-evaluator" /></div>
           </div>
           <div id="eval-categories"></div>
           <div class="form-field" style="margin-bottom:14px;">
-            <label>Notizen</label>
+            <label for="eval-notes">Notizen</label>
             <textarea id="eval-notes" rows="3" placeholder="Freitext-Beobachtungen..."></textarea>
           </div>
           <div class="sticky-total">
@@ -399,11 +399,11 @@
         <h2>Spielerprofil</h2>
         <div style="display:flex; gap:16px; flex-wrap:wrap;">
           <div class="form-field" style="max-width:280px;">
-            <label>Mannschaft (Filter)</label>
+            <label for="profile-team-filter-select">Mannschaft (Filter)</label>
             <select id="profile-team-filter-select"></select>
           </div>
           <div class="form-field" style="max-width:320px;">
-            <label>Spieler wählen</label>
+            <label for="profile-player-select">Spieler wählen</label>
             <select id="profile-player-select"></select>
           </div>
         </div>
@@ -413,10 +413,10 @@
         <h2>Spielervergleich</h2>
         <p class="muted" style="margin-bottom:12px;">Bis zu 4 Spieler anhand ihrer letzten Bewertung direkt vergleichen.</p>
         <div class="form-grid">
-          <div class="form-field"><label>Spieler 1</label><select id="compare-player-1"></select></div>
-          <div class="form-field"><label>Spieler 2</label><select id="compare-player-2"></select></div>
-          <div class="form-field"><label>Spieler 3</label><select id="compare-player-3"></select></div>
-          <div class="form-field"><label>Spieler 4</label><select id="compare-player-4"></select></div>
+          <div class="form-field"><label for="compare-player-1">Spieler 1</label><select id="compare-player-1"></select></div>
+          <div class="form-field"><label for="compare-player-2">Spieler 2</label><select id="compare-player-2"></select></div>
+          <div class="form-field"><label for="compare-player-3">Spieler 3</label><select id="compare-player-3"></select></div>
+          <div class="form-field"><label for="compare-player-4">Spieler 4</label><select id="compare-player-4"></select></div>
         </div>
         <div class="chart-wrap" style="max-width:480px; margin:0 auto 18px;"><canvas id="compare-radar-chart"></canvas></div>
         <p class="muted" id="compare-mixed-hint" style="display:none; margin:-8px 0 14px;">
