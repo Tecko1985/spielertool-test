@@ -419,10 +419,14 @@ function startApp() {
   const settingsFileName = document.getElementById("settings-file-name");
   if (settingsFileName) settingsFileName.textContent = fileLabel;
   setSaveStatus("Autospeichern aktiv · Autoladen beim nächsten Öffnen aktiv");
+  // ⚠️ Nur noch `fs`. Daneben stand bis 2026-09-04 eine zweite Huelle
+  // `settings-webdav-actions` mit einem Knopf „Nextcloud-Verbindung trennen" --
+  // aus der Zeit vor dem Gateway-Login. Sie wurde BEDINGUNGSLOS auf `none`
+  // gesetzt und der Knopf hatte keinen Horcher: unsichtbar und unverdrahtet
+  // zugleich. `storageMode` kennt nur noch "fs" und "gateway" (siehe oben),
+  // getrennt wird ueber die Abmeldung am Gateway.
   const fsActions = document.getElementById("settings-fs-actions");
-  const webdavActions = document.getElementById("settings-webdav-actions");
   if (fsActions) fsActions.style.display = storageMode === "fs" ? "flex" : "none";
-  if (webdavActions) webdavActions.style.display = "none";
   renderAll();
   updateBackupFolderStatus();
   tryAutoBackupOnStart();
