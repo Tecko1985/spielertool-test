@@ -2,6 +2,25 @@ const APP_VERSION = "1.0";
 
 const APP_CHANGELOG = [
   {
+    version: "1.2",
+    groups: [
+      {
+        title: "Eine von Hand gesetzte Mannschaft bleibt jetzt stehen",
+        items: [
+          "Wer einen Spieler von Hand in eine andere Mannschaft setzt, auf „— ohne Mannschaft —“ stellt oder in eine Sichtungsgruppe ohne Jahrgangsbereich einträgt, findet ihn beim nächsten Öffnen genau dort wieder. Vorher zog die automatische Zuordnung ihn bei jedem Start still in die Jahrgangsmannschaft zurück — und speicherte das gleich mit.",
+          "Automatisch zugeordnet wird weiterhin jeder Spieler, an dem noch niemand von Hand etwas geändert hat."
+        ]
+      },
+      {
+        title: "Wer nur sehen darf, löst keinen Speicherversuch mehr aus",
+        items: [
+          "Beim Öffnen lief die automatische Mannschaftszuordnung los, bevor die Rechte überhaupt bekannt waren. Bei jemandem mit reinem Leserecht endete das in einem abgelehnten Speicherversuch — und danach fragte der Browser bei jedem Schließen der Seite nach, ob ungespeicherte Änderungen verworfen werden sollen. Die Erklärung dazu stand ausgerechnet im Reiter „Einstellungen“, den ein Nur-Seher gar nicht sieht.",
+          "Jetzt holt die App erst die Rechte und ordnet danach zu; ohne Bearbeitungsrecht wird gar nichts geschrieben und nichts nachgefragt."
+        ]
+      }
+    ]
+  },
+  {
     version: "1.1",
     groups: [
       {

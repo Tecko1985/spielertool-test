@@ -190,7 +190,18 @@ function findTeamForBirthdate(birthdate) {
   return matches[0];
 }
 
+// ⚠️ Eine von Hand gesetzte Mannschaft wird NIE überschrieben.
+//
+// Die Spielerliste bietet je Zeile ein Mannschafts-Auswahlfeld inklusive
+// "— ohne Mannschaft —", der Geburtsdatums-Bereich einer Mannschaft ist
+// ausdrücklich optional, und ein frei getippter Name (Sichtungsgruppe) hat gar
+// keinen Bereich. Ohne diesen Merker zog die automatische Zuordnung bei JEDEM
+// Start alle drei Fälle wieder in die Jahrgangsmannschaft zurück — still, und
+// mitgespeichert. "ohne Mannschaft" liess sich dabei nicht von "noch nie
+// zugeordnet" unterscheiden; genau dafür gibt es den Merker statt einer
+// Prüfung auf ein leeres teamId.
 function autoAssignTeamForPlayer(p) {
+  if (p.teamManuell) return false;
   if (!p.birthdate) return false;
   const team = findTeamForBirthdate(p.birthdate);
   if (!team || p.teamId === team.id) return false;
@@ -199,6 +210,9 @@ function autoAssignTeamForPlayer(p) {
 }
 
 function autoAssignAllPlayers() {
+  // Ein Nur-Seher ordnet nichts zu — sonst zeigte die Liste ihm Mannschaften,
+  // die so nirgends gespeichert sind (persist() lehnt für ihn ab).
+  if (!canEdit()) return false;
   let changed = false;
   appData.players.forEach((p) => {
     if (autoAssignTeamForPlayer(p)) changed = true;
@@ -253,8 +267,11 @@ async function init() {
       storageMode = "gateway";
       appData = data && Array.isArray(data.players) ? data : { teams: [], players: [], evaluations: [], changeRequests: [] };
       migrateData(appData);
-      autoAssignAllPlayers();
+      // ⚠️ Erst die Rechte holen, dann automatisch zuordnen. Andersherum lief
+      // die Zuordnung mit currentUser === null, also mit canEdit() === false,
+      // und schickte einen Schreibvorgang los, den der Worker ablehnen muss.
       try { currentUser = await fetchMe(); } catch (_) { /* best effort, für die Bewerter-Vorbelegung */ }
+      autoAssignAllPlayers();
       await FileStore.setStorageMode("gateway");
       await FileStore.clearWebdavConfig(); // alte, im Klartext gespeicherte Zugangsdaten aufräumen
       startApp();
@@ -438,6 +455,15 @@ function setSaveStatus(text) {
 }
 
 function persist() {
+  // ⚠️ Rechteprüfung an der EINEN Stelle, durch die jeder Schreibweg läuft.
+  // Alle übrigen Aufrufer (commitPlayerEdit, commitTeamEdit, deleteTeam, die
+  // Formulare) prüfen ohnehin schon — für sie ändert sich nichts. Ohne die
+  // Zeile löste ein Nur-Seher beim Öffnen einen dav-save aus, den der Worker
+  // mit 403 abweist (spielertool-test steht in
+  // WRITE_REQUIRES_EDIT_PERMISSION); danach fragte beforeunload bei JEDEM
+  // Schliessen nach, und die Erklärung dazu steht in einem Reiter, den ein
+  // Seher gar nicht sieht.
+  if (!canEdit()) return;
   setSaveStatus("Speichert…");
   clearTimeout(saveTimer);
   ungespeicherteAenderungen = true;
@@ -1222,6 +1248,8 @@ function renderPlayers() {
     });
     row.querySelector(".p-edit-team").addEventListener("change", (e) => {
       player.teamId = e.target.value || null;
+      // Ab hier gilt die Handzuordnung, auch "— ohne Mannschaft —".
+      player.teamManuell = true;
       commitPlayerEdit();
     });
     row.querySelector('[data-action="delete"]').addEventListener("click", () => deletePlayer(id));
