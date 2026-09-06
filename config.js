@@ -2,6 +2,18 @@ const APP_VERSION = "1.0";
 
 const APP_CHANGELOG = [
   {
+    version: "1.4",
+    groups: [
+      {
+        title: "Vorleseprogramme finden die Gewichtungsfelder",
+        items: [
+          "In der Gewichtungstabelle je Altersstufe stehen vier Zahlenfelder nebeneinander. Welche Spalte welche ist, stand nur in der Kopfzeile darüber — ein Vorleseprogramm liest die nicht mit vor.",
+          "Jedes Feld nennt jetzt selbst seine Kategorie und seine Altersstufe. Am Bildschirm ändert sich nichts."
+        ]
+      }
+    ]
+  },
+  {
     version: "1.2",
     groups: [
       {

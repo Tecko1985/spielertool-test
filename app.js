@@ -933,7 +933,7 @@ function renderAgeWeights() {
       const sum = SCORE_CATEGORIES.reduce((s, cat) => s + (Number(weights[cat.id]) || 0), 0);
       const sumClass = sum === 100 ? "ok" : "bad";
       const inputs = SCORE_CATEGORIES.map(
-        (cat) => `<input type="number" min="0" max="100" step="1" class="weight-input" data-cat="${cat.id}" value="${escapeHtml(weights[cat.id])}" />`
+        (cat) => `<input type="number" aria-label="${escapeHtml(cat.label + ", " + AGE_GROUP_LABELS[group])}" min="0" max="100" step="1" class="weight-input" data-cat="${cat.id}" value="${escapeHtml(weights[cat.id])}" />`
       ).join("");
       return `
       <div class="weights-row" data-group="${group}">
