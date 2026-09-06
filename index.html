@@ -253,7 +253,7 @@
         <div class="btn-row" style="justify-content:flex-start;">
           <button class="btn secondary small" id="btn-export">JSON exportieren</button>
           <button class="btn secondary small admin-only hidden" id="btn-import">JSON importieren</button>
-          <input type="file" id="import-file-input" accept="application/json" style="display:none;" />
+          <input type="file" id="import-file-input" aria-label="Sicherungsdatei auswählen" accept="application/json" style="display:none;" />
         </div>
       </div>
       <div class="card admin-only hidden">
@@ -267,7 +267,7 @@
         </p>
         <div class="btn-row" style="justify-content:flex-start;">
           <button class="btn secondary small" id="btn-import-excel">Excel-Datei wählen…</button>
-          <input type="file" id="import-excel-input" accept=".xlsx,.xls,.csv" style="display:none;" />
+          <input type="file" id="import-excel-input" aria-label="Excel-Datei auswählen" accept=".xlsx,.xls,.csv" style="display:none;" />
         </div>
         <p class="muted" id="settings-excel-import-status" style="margin-top:10px;"></p>
       </div>
